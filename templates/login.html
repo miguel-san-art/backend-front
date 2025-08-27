@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connexion - ART Telecom Titles Manager</title>
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    
+    <style>
+        .login-background {
+            background-image: linear-gradient(rgba(30, 58, 138, 0.7), rgba(30, 58, 138, 0.7)), url('{% static "images/immeuble-ART.jpg" %}');
+            background-size: 100% auto;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        
+        .login-card-overlay {
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen login-background">
+    <!-- Header with Dual Logos -->
+    <header class="bg-surface shadow-institutional border-b border-secondary-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Polytechnique Logo (Left) -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="{% static 'images/polytechnique-logo.jpg' %}" alt="Polytechnique Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+
+                <!-- ART Logo (Right) -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="{% static 'images/art-logo.jpg' %}" alt="ART Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
+        <div class="max-w-md w-full space-y-8">
+            <!-- Login Card -->
+            <div class="card login-card-overlay max-w-md mx-auto">
+                <!-- Header -->
+                <div class="text-center mb-8">
+                    <div class="mx-auto h-12 w-12 bg-primary-100 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-shield-alt text-primary text-xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-semibold text-text-primary mb-2">Connexion Sécurisée</h2>
+                    <p class="text-secondary-600 text-sm">Accédez au système de gestion des Titres d'exploitations</p>
+                </div>
+
+                <!-- Django Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mb-4 p-3 rounded-md {% if message.tags == 'error' %}bg-error-50 border border-error-200 text-error-600{% elif message.tags == 'success' %}bg-success-50 border border-success-200 text-success-600{% else %}bg-accent-50 border border-accent-200 text-accent-600{% endif %}">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    {% if message.tags == 'error' %}
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    {% elif message.tags == 'success' %}
+                                        <i class="fas fa-check-circle"></i>
+                                    {% else %}
+                                        <i class="fas fa-info-circle"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm">{{ message }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Login Form -->
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <!-- Username/Email Field -->
+                    <div>
+                        <label for="id_username" class="block text-sm font-medium text-text-primary mb-2">
+                            <i class="fas fa-user mr-2 text-secondary-500"></i>
+                            Email
+                        </label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="text-error text-xs mt-1">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                {{ form.username.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Password Field -->
+                    <div>
+                        <label for="id_password" class="block text-sm font-medium text-text-primary mb-2">
+                            <i class="fas fa-lock mr-2 text-secondary-500"></i>
+                            Mot de passe
+                        </label>
+                        <div class="relative">
+                            {{ form.password }}
+                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-secondary-500 hover:text-secondary-700 transition-colors">
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                        {% if form.password.errors %}
+                            <div class="text-error text-xs mt-1">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                {{ form.password.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Remember Me -->
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm">
+                            <a href="#" class="font-medium text-primary hover:text-primary-700 transition-colors" onclick="showForgotPassword()">
+                                Mot de passe oublié ?
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div>
+                        <button type="submit" id="loginButton" class="btn-primary w-full flex justify-center items-center py-3 text-base font-medium">
+                            <span id="loginText">Se Connecter</span>
+                            <div id="loginSpinner" class="hidden ml-2">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Demo Credentials Info -->
+                <div class="mt-6 p-4 bg-accent-50 border border-accent-200 rounded-md">
+                    <h4 class="text-sm font-medium text-accent-800 mb-2">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Comptes de démonstration
+                    </h4>
+                    <div class="text-xs text-accent-700 space-y-1">
+                        <div><strong>Administrateur:</strong> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d4b5b0b9bdba94b5a6a0fab7b9">[email&#160;protected]</a> / admin123</div>
+                        <div><strong>Personnel:</strong> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="25554057564a4b4b4049654457510b4648">[email&#160;protected]</a> / personnel123</div>
+                        <div><strong>Opérateur:</strong> <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f39c8396819287968681b3928187dd909e">[email&#160;protected]</a> / operateur123</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center">
+                <p class="text-xs text-secondary-500">
+                    © 2025 ART Cameroun. Tous droits réservés.
+                </p>
+                <p class="text-xs text-secondary-400 mt-1">
+                    Système de gestion des titres d'exploitations
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-surface rounded-lg shadow-modal max-w-md w-full mx-4 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-text-primary">Réinitialisation du mot de passe</h3>
+                <button onclick="closeForgotPassword()" class="text-secondary-500 hover:text-secondary-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="forgotPasswordForm">
+                <div class="mb-4">
+                    <label for="resetEmail" class="block text-sm font-medium text-text-primary mb-2">
+                        Adresse email
+                    </label>
+                    <input type="email" id="resetEmail" class="input-field" placeholder="Entrez votre adresse email" required />
+                </div>
+                <div class="flex space-x-3">
+                    <button type="button" onclick="closeForgotPassword()" class="btn-secondary flex-1">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn-primary flex-1">
+                        Envoyer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // Password toggle functionality
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordField = document.getElementById('id_password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                eyeIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordField.type = 'password';
+                eyeIcon.className = 'fas fa-eye';
+            }
+        });
+
+        // Forgot password modal functions
+        function showForgotPassword() {
+            document.getElementById('forgotPasswordModal').classList.remove('hidden');
+            document.getElementById('forgotPasswordModal').classList.add('flex');
+        }
+
+        function closeForgotPassword() {
+            document.getElementById('forgotPasswordModal').classList.add('hidden');
+            document.getElementById('forgotPasswordModal').classList.remove('flex');
+            document.getElementById('resetEmail').value = '';
+        }
+
+        // Forgot password form submission
+        document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('resetEmail').value;
+            
+            // Simulate password reset
+            alert(`Un email de réinitialisation a été envoyé à ${email}`);
+            closeForgotPassword();
+        });
+
+        // Close modal on outside click
+        document.getElementById('forgotPasswordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeForgotPassword();
+            }
+        });
+
+        // Form submission with loading state
+        document.querySelector('form').addEventListener('submit', function() {
+            const loginButton = document.getElementById('loginButton');
+            const loginText = document.getElementById('loginText');
+            const loginSpinner = document.getElementById('loginSpinner');
+            
+            loginButton.disabled = true;
+            loginText.textContent = 'Connexion...';
+            loginSpinner.classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>

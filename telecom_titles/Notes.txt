@@ -1,0 +1,43 @@
+-> Conexion a la base de donnee mysql : 
+Commande : " sudo mysql -u root -p "
+Password : " root " 
+
+Nom de la BD : " telecom_db " 
+Nom d'utilisateur : " miguel " 
+Mot de passe de la base de donnee : " 1234 "
+
+
+
+
+Logins :
+    - Miguel 
+        * Password : AdminMiguel1234
+        * Role : Admin
+
+    - Admin1 
+        * Password : SecretAdmin1234
+        * Role : Admin
+
+    - Smj :
+        * Pasword : (Tu connais deja)
+        * Role : Admin
+    
+    - Personnel1 
+        * Pasword : SecretPersonnal1234
+        * Role : Personnel
+
+    - Operator1
+        * Pasword : Secretoperator1234
+        * Role : Operateur
+    
+    - Operator2 
+        * Pasword : 1234@Cirusmcgb
+        * Role : Operateur
+
+
+Afficher les DB : 
+    * Afficher les bases de donnees : " SHOW DATABASES; "
+    * Utiliser la base de donnee telecom_db : " use telecom_db; "
+    * Afficher les tables de la base de donnee telecom_db : " show tables; "
+
+

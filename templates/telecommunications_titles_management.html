@@ -1,0 +1,592 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestion des Titres - ART Telecom Titles Manager{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+                <h1 class="text-3xl font-semibold text-text-primary mb-2">
+                    Gestion des Titres
+                </h1>
+                <p class="text-secondary-600">
+                    Gérez tous les titres de télécommunications
+                </p>
+            </div>
+            
+            {% if user.profile.role != 'operateur' %}
+            <div class="mt-4 md:mt-0 flex space-x-3">
+                <button onclick="showImportModal()" class="btn-secondary">
+                    <i class="fas fa-file-excel mr-2"></i>
+                    Importer Excel
+                </button>
+                <a href="{% url 'title_creation_and_edit_form' %}" class="btn-primary">
+                    <i class="fas fa-plus mr-2"></i>
+                    Nouveau Titre
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="card mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+            <!-- Search -->
+            <div class="flex-1 max-w-md">
+                <div class="relative">
+                    <input type="text" id="searchInput" placeholder="Rechercher par numéro, entreprise..." 
+                           class="input-field pl-10" value="{{ search_query|default:'' }}">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-secondary-400"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="flex flex-wrap gap-3">
+                <select id="typeFilter" class="input-field">
+                    <option value="">Tous les types</option>
+                    {% for type_code, type_name in type_choices %}
+                        <option value="{{ type_code }}" {% if selected_type == type_code %}selected{% endif %}>
+                            {{ type_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <select id="statusFilter" class="input-field">
+                    <option value="">Tous les statuts</option>
+                    {% for status_code, status_name in status_choices %}
+                        <option value="{{ status_code }}" {% if selected_status == status_code %}selected{% endif %}>
+                            {{ status_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <select id="urgencyFilter" class="input-field">
+                    <option value="">Toutes urgences</option>
+                    <option value="expired" {% if filter_type == 'expired' %}selected{% endif %}>Expirés</option>
+                    <option value="expiring_soon" {% if filter_type == 'expiring_soon' %}selected{% endif %}>Expire bientôt</option>
+                    <option value="active" {% if filter_type == 'active' %}selected{% endif %}>Actifs</option>
+                </select>
+
+                <button onclick="resetFilters()" class="btn-secondary">
+                    <i class="fas fa-times mr-2"></i>
+                    Réinitialiser
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="card text-center">
+            <div class="text-2xl font-bold text-success">{{ stats.total_actifs }}</div>
+            <div class="text-sm text-secondary-600">Titres Actifs</div>
+        </div>
+        <div class="card text-center">
+            <div class="text-2xl font-bold text-error">{{ stats.total_expires }}</div>
+            <div class="text-sm text-secondary-600">Expirés</div>
+        </div>
+        <div class="card text-center">
+            <div class="text-2xl font-bold text-warning">{{ stats.total_expirant_bientot }}</div>
+            <div class="text-sm text-secondary-600">Expire Bientôt</div>
+        </div>
+        <div class="card text-center">
+            <div class="text-2xl font-bold text-primary">{{ stats.total_demandes }}</div>
+            <div class="text-sm text-secondary-600">Total Titres</div>
+        </div>
+    </div>
+
+    <!-- Titles Table -->
+    <div class="card">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-text-primary">
+                Liste des Titres
+                <span class="text-sm text-secondary-500 font-normal ml-2">
+                    ({{ titres|length }} résultats)
+                </span>
+            </h2>
+            
+            <div class="flex space-x-2">
+                <button onclick="exportToExcel()" class="btn-secondary text-sm">
+                    <i class="fas fa-file-excel mr-1"></i>
+                    Exporter
+                </button>
+                <button onclick="refreshTable()" class="btn-secondary text-sm">
+                    <i class="fas fa-sync-alt mr-1"></i>
+                    Actualiser
+                </button>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-secondary-200">
+                <thead class="bg-secondary-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                            Numéro
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                            Entreprise
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                            Type
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                            Date Émission
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                            Date Expiration
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                            Statut
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                            Redevance
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="titresTableBody" class="bg-white divide-y divide-secondary-200">
+                    {% for titre in titres %}
+                    <tr class="{% if titre.is_expired %}bg-red-50 border-l-4 border-red-500{% elif titre.is_expiring_soon %}bg-yellow-50 border-l-4 border-yellow-500{% endif %} hover:bg-secondary-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <div class="font-medium">{{ titre.numero_titre }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">{{ titre.entreprise_nom }}</div>
+                            <div class="text-sm text-gray-500">{{ titre.proprietaire.profile.nom }} {{ titre.proprietaire.profile.prenom }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ titre.get_type_display }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ titre.date_emission|date:"d/m/Y" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ titre.date_expiration|date:"d/m/Y" }}
+                            {% if titre.is_expired %}
+                                <span class="ml-2 text-xs text-red-600">❌ Expiré</span>
+                            {% elif titre.is_expiring_soon %}
+                                <span class="ml-2 text-xs text-yellow-600">⚠️ Expire bientôt</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full 
+                                {% if titre.status == 'approuve' %}bg-green-100 text-green-800
+                                {% elif titre.status == 'expire' %}bg-red-100 text-red-800
+                                {% elif titre.status == 'en_attente' %}bg-yellow-100 text-yellow-800
+                                {% elif titre.status == 'en_cours' %}bg-blue-100 text-blue-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ titre.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ titre.redevance_annuelle|floatformat:0 }} XAF
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button onclick="viewTitle('{{ titre.id }}')" class="text-blue-600 hover:text-blue-900" title="Voir">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                {% if user.profile.role != 'operateur' %}
+                                <button onclick="editTitle('{{ titre.id }}')" class="text-green-600 hover:text-green-900" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                {% endif %}
+                                {% if titre.status == 'approuve' and titre.is_expiring_soon and user.profile.role != 'operateur' %}
+                                <button onclick="renewTitle('{{ titre.id }}')" class="text-yellow-600 hover:text-yellow-900" title="Renouveler">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                                {% endif %}
+                                {% if user.profile.role == 'admin' %}
+                                <button onclick="deleteTitle('{{ titre.id }}')" class="text-red-600 hover:text-red-900" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="px-6 py-8 text-center text-secondary-500">
+                            <i class="fas fa-certificate text-4xl mb-4"></i>
+                            <p>Aucun titre trouvé</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="flex items-center justify-between border-t border-secondary-200 bg-white px-4 py-3 sm:px-6">
+            <div class="flex flex-1 justify-between sm:hidden">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" 
+                   class="relative inline-flex items-center rounded-md border border-secondary-300 bg-white px-4 py-2 text-sm font-medium text-secondary-700 hover:bg-secondary-50">
+                    Précédent
+                </a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" 
+                   class="relative ml-3 inline-flex items-center rounded-md border border-secondary-300 bg-white px-4 py-2 text-sm font-medium text-secondary-700 hover:bg-secondary-50">
+                    Suivant
+                </a>
+                {% endif %}
+            </div>
+            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-secondary-700">
+                        Affichage de
+                        <span class="font-medium">{{ page_obj.start_index }}</span>
+                        à
+                        <span class="font-medium">{{ page_obj.end_index }}</span>
+                        sur
+                        <span class="font-medium">{{ paginator.count }}</span>
+                        résultats
+                    </p>
+                </div>
+                <div>
+                    <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                        {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" 
+                           class="relative inline-flex items-center rounded-l-md border border-secondary-300 bg-white px-2 py-2 text-sm font-medium text-secondary-500 hover:bg-secondary-50">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <span class="relative z-10 inline-flex items-center border border-primary-500 bg-primary-50 px-4 py-2 text-sm font-medium text-primary-600">
+                                {{ num }}
+                            </span>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" 
+                               class="relative inline-flex items-center border border-secondary-300 bg-white px-4 py-2 text-sm font-medium text-secondary-500 hover:bg-secondary-50">
+                                {{ num }}
+                            </a>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_type %}&type={{ selected_type }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" 
+                           class="relative inline-flex items-center rounded-r-md border border-secondary-300 bg-white px-2 py-2 text-sm font-medium text-secondary-500 hover:bg-secondary-50">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Import Excel Modal -->
+<div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-surface rounded-lg shadow-modal max-w-md w-full mx-4 p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-text-primary">
+                <i class="fas fa-file-excel mr-2 text-accent"></i>
+                Importer fichier Excel
+            </h3>
+            <button onclick="closeImportModal()" class="text-secondary-500 hover:text-secondary-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <form id="importForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-4">
+                <div class="border-2 border-dashed border-secondary-300 rounded-lg p-6 text-center">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-secondary-400 mb-4"></i>
+                    <p class="text-sm text-secondary-600 mb-2">Glissez votre fichier Excel ici ou</p>
+                    <input type="file" id="excelFile" name="fichier" accept=".xlsx,.xls" class="hidden" />
+                    <button type="button" onclick="document.getElementById('excelFile').click()" class="btn-primary">
+                        Choisir un fichier
+                    </button>
+                </div>
+                <p class="text-xs text-secondary-500 mt-2">
+                    Formats acceptés: .xlsx, .xls (max 10MB)
+                </p>
+            </div>
+            
+            <div class="flex space-x-3">
+                <button type="button" onclick="closeImportModal()" class="btn-secondary flex-1">
+                    Annuler
+                </button>
+                <button type="submit" class="btn-primary flex-1">
+                    Importer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Title Details Modal -->
+<div id="titleModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-surface rounded-lg shadow-modal max-w-2xl w-full mx-4 p-6 max-h-96 overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-text-primary" id="titleModalTitle">
+                Détails du Titre
+            </h3>
+            <button onclick="closeTitleModal()" class="text-secondary-500 hover:text-secondary-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div id="titleModalContent">
+            <!-- Content will be loaded dynamically -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block bottom_js %}
+<script>
+// Search and filter functionality
+let searchTimeout;
+
+document.getElementById('searchInput').addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        applyFilters();
+    }, 500);
+});
+
+document.getElementById('typeFilter').addEventListener('change', applyFilters);
+document.getElementById('statusFilter').addEventListener('change', applyFilters);
+document.getElementById('urgencyFilter').addEventListener('change', applyFilters);
+
+function applyFilters() {
+    const search = document.getElementById('searchInput').value;
+    const type = document.getElementById('typeFilter').value;
+    const status = document.getElementById('statusFilter').value;
+    const urgency = document.getElementById('urgencyFilter').value;
+    
+    const params = new URLSearchParams();
+    if (search) params.set('search', search);
+    if (type) params.set('type', type);
+    if (status) params.set('status', status);
+    if (urgency) params.set('filter', urgency);
+    
+    window.location.href = '?' + params.toString();
+}
+
+function resetFilters() {
+    window.location.href = '{% url "telecommunications_titles_management" %}';
+}
+
+// Title actions
+function viewTitle(titleId) {
+    fetch(`/api/titres/${titleId}/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('titleModalTitle').textContent = `Titre ${data.numero_titre}`;
+            document.getElementById('titleModalContent').innerHTML = `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Numéro</label>
+                            <p class="text-sm text-gray-900">${data.numero_titre}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Type</label>
+                            <p class="text-sm text-gray-900">${data.type_display}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Entreprise</label>
+                            <p class="text-sm text-gray-900">${data.entreprise_nom}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Propriétaire</label>
+                            <p class="text-sm text-gray-900">${data.proprietaire_nom}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Date Émission</label>
+                            <p class="text-sm text-gray-900">${new Date(data.date_emission).toLocaleDateString('fr-FR')}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Date Expiration</label>
+                            <p class="text-sm text-gray-900">${new Date(data.date_expiration).toLocaleDateString('fr-FR')}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Statut</label>
+                            <p class="text-sm text-gray-900">${data.status_display}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Redevance Annuelle</label>
+                            <p class="text-sm text-gray-900">${data.redevance_annuelle} XAF</p>
+                        </div>
+                    </div>
+                    ${data.description ? `
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Description</label>
+                        <p class="text-sm text-gray-900">${data.description}</p>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            showTitleModal();
+        })
+        .catch(error => {
+            showNotification('Erreur lors de la récupération des détails', 'error');
+            console.error('Error:', error);
+        });
+}
+
+function editTitle(titleId) {
+    window.location.href = `{% url 'title_creation_and_edit_form' %}?edit=${titleId}`;
+}
+
+function renewTitle(titleId) {
+    if (!confirm('Êtes-vous sûr de vouloir renouveler ce titre ?')) {
+        return;
+    }
+    
+    fetch(`/api/titres/${titleId}/renew/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            duree_ans: 5,
+            commentaire: 'Renouvellement automatique'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            showNotification(data.message, 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showNotification('Erreur lors du renouvellement', 'error');
+        }
+    })
+    .catch(error => {
+        showNotification('Erreur de connexion', 'error');
+        console.error('Error:', error);
+    });
+}
+
+function deleteTitle(titleId) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce titre ? Cette action est irréversible.')) {
+        return;
+    }
+    
+    fetch(`/api/titres/${titleId}/`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            showNotification('Titre supprimé avec succès', 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showNotification('Erreur lors de la suppression', 'error');
+        }
+    })
+    .catch(error => {
+        showNotification('Erreur de connexion', 'error');
+        console.error('Error:', error);
+    });
+}
+
+// Modal functions
+function showImportModal() {
+    document.getElementById('importModal').classList.remove('hidden');
+    document.getElementById('importModal').classList.add('flex');
+}
+
+function closeImportModal() {
+    document.getElementById('importModal').classList.add('hidden');
+    document.getElementById('importModal').classList.remove('flex');
+    document.getElementById('excelFile').value = '';
+}
+
+function showTitleModal() {
+    document.getElementById('titleModal').classList.remove('hidden');
+    document.getElementById('titleModal').classList.add('flex');
+}
+
+function closeTitleModal() {
+    document.getElementById('titleModal').classList.add('hidden');
+    document.getElementById('titleModal').classList.remove('flex');
+}
+
+// Import form handling
+document.getElementById('importForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const fileInput = document.getElementById('excelFile');
+    if (!fileInput.files.length) {
+        showNotification('Veuillez sélectionner un fichier Excel', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('fichier', fileInput.files[0]);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+    
+    showNotification('Import en cours...', 'info');
+    closeImportModal();
+    
+    fetch('{% url "import_excel" %}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(`Import réussi: ${data.data.nombre_succes} enregistrements traités`, 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showNotification(`Erreur d'import: ${data.error}`, 'error');
+        }
+    })
+    .catch(error => {
+        showNotification('Erreur de connexion', 'error');
+        console.error('Error:', error);
+    });
+});
+
+// Export functionality
+function exportToExcel() {
+    showNotification('Génération de l\'export en cours...', 'info');
+    
+    const params = new URLSearchParams(window.location.search);
+    params.set('export', 'excel');
+    
+    window.open('?' + params.toString(), '_blank');
+}
+
+function refreshTable() {
+    location.reload();
+}
+
+// Close modals on outside click
+document.getElementById('importModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeImportModal();
+    }
+});
+
+document.getElementById('titleModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeTitleModal();
+    }
+});
+</script>
+{% endblock %}

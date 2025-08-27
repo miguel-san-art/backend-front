@@ -1,0 +1,489 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tableau de Bord - ART Telecom Titles Manager{% endblock %}
+
+{% block main_class %}max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8{% endblock %}
+
+{% block content %}
+<div class="flex flex-col lg:flex-row gap-8">
+    <!-- Main Dashboard Content -->
+    <div class="flex-1">
+        <!-- Welcome Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-semibold text-text-primary mb-2">
+                Tableau de Bord
+            </h1>
+            <p class="text-secondary-600">
+                Bienvenue, <span class="font-medium text-text-primary">{{ user.profile.nom }} {{ user.profile.prenom }}</span>. 
+                Voici un aperçu de l'activité des titres de télécommunications.
+            </p>
+            <div class="text-sm text-secondary-500 mt-1">
+                Dernière mise à jour: <span id="lastUpdate">{{ now|date:"d/m/Y H:i" }}</span>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Active Titles -->
+            <div class="card hover:shadow-elevated transition-shadow cursor-pointer group" onclick="navigateToTitles('active')">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center group-hover:bg-success-200 transition-colors">
+                            <i class="fas fa-certificate text-success text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <p class="text-sm font-medium text-secondary-600">Titres Actifs</p>
+                        <p class="text-2xl font-semibold text-text-primary" id="total-active-titles">{{ stats.titres_actifs }}</p>
+                        <p class="text-xs text-success-600">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            +{{ stats.nouveaux_ce_mois|default:0 }} ce mois
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-secondary-500">
+                    Valeur totale: {{ stats.valeur_totale|default:"0"|floatformat:0 }} XAF
+                </div>
+            </div>
+
+            <!-- Expired Titles -->
+            <div class="card hover:shadow-elevated transition-shadow cursor-pointer group" onclick="navigateToTitles('expired')">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-error-100 rounded-lg flex items-center justify-center group-hover:bg-error-200 transition-colors">
+                            <i class="fas fa-exclamation-triangle text-error text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <p class="text-sm font-medium text-secondary-600">Titres Expirés</p>
+                        <p class="text-2xl font-semibold text-text-primary" id="total-expired-titles">{{ stats.titres_expires }}</p>
+                        <p class="text-xs text-error-600">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            Attention requise
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-secondary-500">
+                    Dernière expiration: {{ stats.derniere_expiration|date:"d/m/Y"|default:"-" }}
+                </div>
+            </div>
+
+            <!-- Recent Additions -->
+            <div class="card hover:shadow-elevated transition-shadow cursor-pointer group" onclick="navigateToTitles('recent')">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-accent-100 rounded-lg flex items-center justify-center group-hover:bg-accent-200 transition-colors">
+                            <i class="fas fa-plus-circle text-accent text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <p class="text-sm font-medium text-secondary-600">Ajouts Récents</p>
+                        <p class="text-2xl font-semibold text-text-primary" id="total-recent-titles">{{ stats.ajouts_recents|default:0 }}</p>
+                        <p class="text-xs text-accent-600">
+                            <i class="fas fa-clock mr-1"></i>
+                            Cette semaine
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-secondary-500">
+                    Dernier ajout: {{ stats.dernier_ajout|date:"d/m/Y"|default:"-" }}
+                </div>
+            </div>
+
+            <!-- Pending Renewals -->
+            <div class="card hover:shadow-elevated transition-shadow cursor-pointer group" onclick="navigateToTitles('pending')">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-warning-100 rounded-lg flex items-center justify-center group-hover:bg-warning-200 transition-colors">
+                            <i class="fas fa-hourglass-half text-warning text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <p class="text-sm font-medium text-secondary-600">Renouvellements</p>
+                        <p class="text-2xl font-semibold text-text-primary" id="total-pending-renewals">{{ stats.titres_expirant_bientot }}</p>
+                        <p class="text-xs text-warning-600">
+                            <i class="fas fa-calendar-alt mr-1"></i>
+                            30 prochains jours
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-4 text-xs text-secondary-500">
+                    Prochain: {{ stats.prochain_renouvellement|date:"d/m/Y"|default:"-" }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Impact Metrics Highlight -->
+        <div class="card mb-8" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-white">
+                    <i class="fas fa-chart-line mr-2"></i>
+                    Impact sur les Télécommunications
+                </h2>
+                <a href="{% url 'impact_dashboard' %}" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg text-sm font-medium transition-all">
+                    Voir Détails <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="text-center">
+                    <div class="text-3xl font-bold mb-2">73%</div>
+                    <div class="text-sm opacity-90">
+                        <i class="fas fa-clock mr-1"></i>
+                        Réduction des délais
+                    </div>
+                    <div class="text-xs opacity-75 mt-1">30 jours → 8 jours</div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-3xl font-bold mb-2">92.3%</div>
+                    <div class="text-sm opacity-90">
+                        <i class="fas fa-signal mr-1"></i>
+                        Couverture nationale
+                    </div>
+                    <div class="text-xs opacity-75 mt-1">+12% amélioration</div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-3xl font-bold mb-2">99.2%</div>
+                    <div class="text-sm opacity-90">
+                        <i class="fas fa-shield-alt mr-1"></i>
+                        Continuité service
+                    </div>
+                    <div class="text-xs opacity-75 mt-1">85% moins d'interruptions</div>
+                </div>
+            </div>
+            
+            <div class="mt-4 p-3 bg-white bg-opacity-10 rounded-lg">
+                <div class="text-sm opacity-90">
+                    <i class="fas fa-lightbulb mr-2"></i>
+                    L'automatisation a permis d'économiser <strong>2.4M XAF</strong> et d'améliorer l'accès aux télécoms de <strong>18%</strong> en zones rurales.
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions Panel -->
+        <div class="card mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-text-primary">Actions Rapides</h2>
+                <div class="text-sm text-secondary-500">
+                    <i class="fas fa-bolt mr-1"></i>
+                    Accès direct aux fonctions principales
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Add Title -->
+                <button onclick="navigateToCreateTitle()" class="group bg-primary-50 hover:bg-primary-100 border-2 border-primary-200 hover:border-primary-300 rounded-lg p-6 text-center transition-all duration-200">
+                    <div class="w-12 h-12 bg-primary-100 group-hover:bg-primary-200 rounded-lg flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-plus text-primary text-xl"></i>
+                    </div>
+                    <h3 class="font-medium text-primary mb-2">Ajouter Titre</h3>
+                    <p class="text-sm text-secondary-600">Créer un nouveau titre de télécommunication</p>
+                </button>
+
+                <!-- Import Excel -->
+                <button data-action="import-excel" onclick="showImportModal()" class="group bg-accent-50 hover:bg-accent-100 border-2 border-accent-200 hover:border-accent-300 rounded-lg p-6 text-center transition-all duration-200">
+                    <div class="w-12 h-12 bg-accent-100 group-hover:bg-accent-200 rounded-lg flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-file-excel text-accent text-xl"></i>
+                    </div>
+                    <h3 class="font-medium text-accent mb-2">Importer Excel</h3>
+                    <p class="text-sm text-secondary-600">Importer des titres depuis un fichier Excel</p>
+                </button>
+
+                <!-- Generate Report -->
+                <button onclick="generateReport()" class="group bg-success-50 hover:bg-success-100 border-2 border-success-200 hover:border-success-300 rounded-lg p-6 text-center transition-all duration-200">
+                    <div class="w-12 h-12 bg-success-100 group-hover:bg-success-200 rounded-lg flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-file-download text-success text-xl"></i>
+                    </div>
+                    <h3 class="font-medium text-success mb-2">Générer Rapport</h3>
+                    <p class="text-sm text-secondary-600">Exporter un rapport détaillé des titres</p>
+                </button>
+            </div>
+        </div>
+
+        <!-- Recent Activity Feed -->
+        <div class="card">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-text-primary">Activité Récente</h2>
+                <a href="{% url 'telecommunications_titles_management' %}" class="text-sm text-primary hover:text-primary-700 font-medium">
+                    Voir tout
+                    <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+
+            <div class="space-y-4" id="recent-activity">
+                {% for activity in recent_activities %}
+                <div class="flex items-start space-x-4 p-4 bg-secondary-50 rounded-lg">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-{{ activity.icon_color }}-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-{{ activity.icon }} text-{{ activity.icon_color }} text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm text-text-primary">
+                            <span class="font-medium">{{ activity.action }}</span> - 
+                            <span class="font-data">{{ activity.titre_numero }}</span>
+                        </p>
+                        <p class="text-xs text-secondary-600 mt-1">
+                            Par {{ activity.utilisateur }} • {{ activity.date|date:"d/m/Y à H:i" }}
+                        </p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="status-badge status-{{ activity.status_class }}">{{ activity.status }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-8 text-secondary-500">
+                    <i class="fas fa-history text-4xl mb-4"></i>
+                    <p>Aucune activité récente</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Sidebar - Notifications -->
+    <div class="w-full lg:w-80">
+        <!-- Notifications Panel -->
+        <div class="card mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-text-primary">
+                    <i class="fas fa-bell mr-2 text-warning"></i>
+                    Notifications
+                </h3>
+                <span class="bg-error-100 text-error-800 text-xs font-medium px-2 py-1 rounded-full">
+                    {{ urgent_notifications_count|default:0 }} urgentes
+                </span>
+            </div>
+
+            <div class="space-y-3">
+                {% for notification in notifications %}
+                <div class="p-3 bg-{{ notification.type }}-50 border border-{{ notification.type }}-200 rounded-lg">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-{{ notification.icon }} text-{{ notification.type }}"></i>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <p class="text-sm font-medium text-{{ notification.type }}-800">{{ notification.title }}</p>
+                            <p class="text-xs text-{{ notification.type }}-600 mt-1">
+                                {{ notification.message }}
+                            </p>
+                            {% if notification.action_url %}
+                            <button onclick="window.location.href='{{ notification.action_url }}'" class="text-xs text-{{ notification.type }}-700 hover:text-{{ notification.type }}-800 font-medium mt-2">
+                                {{ notification.action_text }} →
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-4 text-secondary-500">
+                    <i class="fas fa-bell-slash text-2xl mb-2"></i>
+                    <p class="text-sm">Aucune notification</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="card">
+            <h3 class="text-lg font-semibold text-text-primary mb-4">
+                <i class="fas fa-chart-pie mr-2 text-primary"></i>
+                Statistiques Rapides
+            </h3>
+
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-success rounded-full mr-3"></div>
+                        <span class="text-sm text-secondary-600">Taux de conformité</span>
+                    </div>
+                    <span class="text-sm font-medium text-text-primary">{{ stats.taux_conformite|default:"0" }}%</span>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-primary rounded-full mr-3"></div>
+                        <span class="text-sm text-secondary-600">Revenus ce mois</span>
+                    </div>
+                    <span class="text-sm font-medium text-text-primary">{{ stats.revenus_mois|default:"0" }}M XAF</span>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-accent rounded-full mr-3"></div>
+                        <span class="text-sm text-secondary-600">Nouveaux clients</span>
+                    </div>
+                    <span class="text-sm font-medium text-text-primary">+{{ stats.nouveaux_clients|default:"0" }}</span>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-warning rounded-full mr-3"></div>
+                        <span class="text-sm text-secondary-600">En attente</span>
+                    </div>
+                    <span class="text-sm font-medium text-text-primary">{{ stats.en_attente|default:"0" }}</span>
+                </div>
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-secondary-200">
+                <a href="{% url 'statistics_and_analytics_dashboard' %}" class="text-sm text-primary hover:text-primary-700 font-medium">
+                    Voir toutes les statistiques
+                    <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Import Excel Modal -->
+<div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-surface rounded-lg shadow-modal max-w-md w-full mx-4 p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-text-primary">
+                <i class="fas fa-file-excel mr-2 text-accent"></i>
+                Importer fichier Excel
+            </h3>
+            <button onclick="closeImportModal()" class="text-secondary-500 hover:text-secondary-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="mb-4">
+            <div class="border-2 border-dashed border-secondary-300 rounded-lg p-6 text-center">
+                <i class="fas fa-cloud-upload-alt text-4xl text-secondary-400 mb-4"></i>
+                <p class="text-sm text-secondary-600 mb-2">Glissez votre fichier Excel ici ou</p>
+                <input type="file" id="excelFile" accept=".xlsx,.xls" class="hidden" />
+                <button onclick="document.getElementById('excelFile').click()" class="btn-primary">
+                    Choisir un fichier
+                </button>
+            </div>
+            <p class="text-xs text-secondary-500 mt-2">
+                Formats acceptés: .xlsx, .xls (max 10MB)
+            </p>
+        </div>
+        
+        <div class="flex space-x-3">
+            <button onclick="closeImportModal()" class="btn-secondary flex-1">
+                Annuler
+            </button>
+            <button onclick="processImport()" class="btn-primary flex-1">
+                Importer
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/excel-integration-django.js' %}"></script>
+{% endblock %}
+
+{% block bottom_js %}
+<script>
+// Navigation functions
+function navigateToTitles(filter = '') {
+    let url = '{% url "telecommunications_titles_management" %}';
+    if (filter) {
+        url += `?filter=${filter}`;
+    }
+    window.location.href = url;
+}
+
+function navigateToCreateTitle() {
+    window.location.href = '{% url "title_creation_and_edit_form" %}';
+}
+
+// Modal functions
+function showImportModal() {
+    document.getElementById('importModal').classList.remove('hidden');
+    document.getElementById('importModal').classList.add('flex');
+}
+
+function closeImportModal() {
+    document.getElementById('importModal').classList.add('hidden');
+    document.getElementById('importModal').classList.remove('flex');
+    document.getElementById('excelFile').value = '';
+}
+
+// Process Excel import
+function processImport() {
+    const fileInput = document.getElementById('excelFile');
+    if (!fileInput.files.length) {
+        showNotification('Veuillez sélectionner un fichier Excel', 'error');
+        return;
+    }
+
+    // Use the API integration
+    handleExcelImport('excelFile');
+    closeImportModal();
+}
+
+// Generate report
+function generateReport() {
+    showNotification('Génération du rapport en cours...', 'info');
+    
+    // Call Django endpoint for report generation
+    fetch('{% url "generate_report" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Rapport généré avec succès', 'success');
+            if (data.download_url) {
+                window.open(data.download_url, '_blank');
+            }
+        } else {
+            showNotification('Erreur lors de la génération du rapport', 'error');
+        }
+    })
+    .catch(error => {
+        showNotification('Erreur de connexion', 'error');
+        console.error('Error:', error);
+    });
+}
+
+// Close modal on outside click
+document.getElementById('importModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeImportModal();
+    }
+});
+
+// File input change handler
+document.getElementById('excelFile').addEventListener('change', function(e) {
+    if (e.target.files.length > 0) {
+        const fileName = e.target.files[0].name;
+        showNotification(`Fichier sélectionné: ${fileName}`, 'info');
+    }
+});
+
+// Update last update time
+function updateLastUpdateTime() {
+    const now = new Date();
+    const formatted = now.toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    }) + ' ' + now.toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    document.getElementById('lastUpdate').textContent = formatted;
+}
+
+// Auto-refresh dashboard data every 5 minutes
+setInterval(() => {
+    updateLastUpdateTime();
+    // Here you would typically fetch fresh data from the server
+    location.reload(); // Simple refresh for now
+}, 300000); // 5 minutes
+</script>
+{% endblock %}

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}ART Telecom Titles Manager{% endblock %}</title>
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    
+    {% block extra_css %}{% endblock %}
+    
+    <style>
+        {% block extra_style %}{% endblock %}
+    </style>
+</head>
+<body class="{% block body_class %}bg-background min-h-screen{% endblock %}">
+    {% block header %}
+    <!-- Header with Dual Logos and Navigation -->
+    <header class="bg-surface shadow-institutional border-b border-secondary-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Polytechnique Logo (Left) -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="{% static 'images/polytechnique-logo.jpg' %}" alt="Polytechnique Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                {% if user.is_authenticated %}
+                <nav class="hidden md:flex space-x-8">
+                    <a href="{% url 'dashboard_overview' %}" class="{% if request.resolver_match.url_name == 'dashboard_overview' %}text-primary font-medium border-b-2 border-primary{% else %}text-secondary-600 hover:text-primary transition-colors{% endif %} pb-4 px-1">
+                        <i class="fas fa-tachometer-alt mr-2"></i>
+                        Tableau de Bord
+                    </a>
+                    <a href="{% url 'telecommunications_titles_management' %}" class="{% if request.resolver_match.url_name == 'telecommunications_titles_management' %}text-primary font-medium border-b-2 border-primary{% else %}text-secondary-600 hover:text-primary transition-colors{% endif %} pb-4 px-1">
+                        <i class="fas fa-certificate mr-2"></i>
+                        Titres
+                    </a>
+                    <a href="{% url 'title_tracking_staff' %}" class="{% if request.resolver_match.url_name == 'title_tracking_staff' %}text-primary font-medium border-b-2 border-primary{% else %}text-secondary-600 hover:text-primary transition-colors{% endif %} pb-4 px-1">
+                        <i class="fas fa-clipboard-list mr-2"></i>
+                        Suivi Demandes
+                    </a>
+                    {% if user.profile.role == 'admin' %}
+                    <a href="{% url 'user_management_administration' %}" class="{% if request.resolver_match.url_name == 'user_management_administration' %}text-primary font-medium border-b-2 border-primary{% else %}text-secondary-600 hover:text-primary transition-colors{% endif %} pb-4 px-1">
+                        <i class="fas fa-users mr-2"></i>
+                        Utilisateurs
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'statistics_and_analytics_dashboard' %}" class="{% if request.resolver_match.url_name == 'statistics_and_analytics_dashboard' %}text-primary font-medium border-b-2 border-primary{% else %}text-secondary-600 hover:text-primary transition-colors{% endif %} pb-4 px-1">
+                        <i class="fas fa-chart-bar mr-2"></i>
+                        Statistiques
+                    </a>
+                    <a href="{% url 'impact_dashboard' %}" class="{% if request.resolver_match.url_name == 'impact_dashboard' %}text-primary font-medium border-b-2 border-primary{% else %}text-secondary-600 hover:text-primary transition-colors{% endif %} pb-4 px-1">
+                        <i class="fas fa-chart-line mr-2"></i>
+                        Impact Télécoms
+                    </a>
+                </nav>
+
+                <!-- User Profile & ART Logo -->
+                <div class="flex items-center space-x-4">
+                    <!-- User Profile Dropdown -->
+                    <div class="relative">
+                        <button id="userMenuButton" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                            <div class="h-8 w-8 bg-primary-100 rounded-full flex items-center justify-center mr-2">
+                                <i class="fas fa-user text-primary text-sm"></i>
+                            </div>
+                            <span class="text-secondary-700 font-medium">{{ user.profile.nom }} {{ user.profile.prenom }}</span>
+                            <i class="fas fa-chevron-down ml-2 text-secondary-500"></i>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-surface rounded-md shadow-elevated border border-secondary-200 z-50">
+                            <div class="py-1">
+                                <div class="px-4 py-2 text-sm text-secondary-500 border-b border-secondary-200">
+                                    <div class="font-medium text-text-primary">{{ user.profile.get_role_display }}</div>
+                                    <div class="text-xs">{{ user.email }}</div>
+                                </div>
+                                <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-user-cog mr-2"></i>
+                                    Profil
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-cog mr-2"></i>
+                                    Paramètres
+                                </a>
+                                <div class="border-t border-secondary-200"></div>
+                                <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-error hover:bg-error-50">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>
+                                    Déconnexion
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ART Logo (Right) -->
+                    <div class="flex-shrink-0">
+                        <img src="{% static 'images/art-logo.jpg' %}" alt="ART Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobileMenuButton" class="text-secondary-600 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-md p-2">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        {% if user.is_authenticated %}
+        <div id="mobileMenu" class="hidden md:hidden bg-surface border-t border-secondary-200">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="{% url 'dashboard_overview' %}" class="{% if request.resolver_match.url_name == 'dashboard_overview' %}bg-primary-50 text-primary{% else %}text-secondary-600 hover:text-primary hover:bg-secondary-50{% endif %} block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-tachometer-alt mr-2"></i>
+                    Tableau de Bord
+                </a>
+                <a href="{% url 'telecommunications_titles_management' %}" class="{% if request.resolver_match.url_name == 'telecommunications_titles_management' %}bg-primary-50 text-primary{% else %}text-secondary-600 hover:text-primary hover:bg-secondary-50{% endif %} block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-certificate mr-2"></i>
+                    Titres
+                </a>
+                <a href="{% url 'title_tracking_staff' %}" class="{% if request.resolver_match.url_name == 'title_tracking_staff' %}bg-primary-50 text-primary{% else %}text-secondary-600 hover:text-primary hover:bg-secondary-50{% endif %} block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-clipboard-list mr-2"></i>
+                    Suivi Demandes
+                </a>
+                {% if user.profile.role == 'admin' %}
+                <a href="{% url 'user_management_administration' %}" class="{% if request.resolver_match.url_name == 'user_management_administration' %}bg-primary-50 text-primary{% else %}text-secondary-600 hover:text-primary hover:bg-secondary-50{% endif %} block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-users mr-2"></i>
+                    Utilisateurs
+                </a>
+                {% endif %}
+                <a href="{% url 'statistics_and_analytics_dashboard' %}" class="{% if request.resolver_match.url_name == 'statistics_and_analytics_dashboard' %}bg-primary-50 text-primary{% else %}text-secondary-600 hover:text-primary hover:bg-secondary-50{% endif %} block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-chart-bar mr-2"></i>
+                    Statistiques
+                </a>
+                <a href="{% url 'impact_dashboard' %}" class="{% if request.resolver_match.url_name == 'impact_dashboard' %}bg-primary-50 text-primary{% else %}text-secondary-600 hover:text-primary hover:bg-secondary-50{% endif %} block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-chart-line mr-2"></i>
+                    Impact Télécoms
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </header>
+    {% endblock %}
+
+    <!-- Main Content -->
+    <main class="{% block main_class %}{% endblock %}">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Notification Toast -->
+    <div id="notificationToast" class="fixed top-4 right-4 bg-surface border border-secondary-200 rounded-lg shadow-elevated p-4 z-50 hidden">
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <i id="toastIcon" class="fas fa-info-circle text-accent"></i>
+            </div>
+            <div class="ml-3 flex-1">
+                <p id="toastMessage" class="text-sm text-text-primary font-medium">Message</p>
+            </div>
+            <button onclick="hideToast()" class="ml-4 text-secondary-500 hover:text-secondary-700">
+                <i class="fas fa-times text-sm"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Global JavaScript -->
+    <script src="{% static 'js/api-integration.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+
+    <script>
+        // Global JavaScript functions
+        function showNotification(message, type = 'info') {
+            const toast = document.getElementById('notificationToast');
+            const icon = document.getElementById('toastIcon');
+            const messageEl = document.getElementById('toastMessage');
+
+            const iconClasses = {
+                'success': 'fas fa-check-circle text-success',
+                'error': 'fas fa-exclamation-circle text-error',
+                'warning': 'fas fa-exclamation-triangle text-warning',
+                'info': 'fas fa-info-circle text-accent'
+            };
+
+            icon.className = iconClasses[type] || iconClasses.info;
+            messageEl.textContent = message;
+
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                hideToast();
+            }, 5000);
+        }
+
+        function hideToast() {
+            document.getElementById('notificationToast').classList.add('hidden');
+        }
+
+        // User menu dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            const userMenuButton = document.getElementById('userMenuButton');
+            const userDropdown = document.getElementById('userDropdown');
+            
+            if (userMenuButton && userDropdown) {
+                userMenuButton.addEventListener('click', function() {
+                    userDropdown.classList.toggle('hidden');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+                        userDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    const icon = this.querySelector('i');
+                    
+                    mobileMenu.classList.toggle('hidden');
+                    
+                    if (mobileMenu.classList.contains('hidden')) {
+                        icon.className = 'fas fa-bars text-xl';
+                    } else {
+                        icon.className = 'fas fa-times text-xl';
+                    }
+                });
+            }
+        });
+    </script>
+
+    {% block bottom_js %}{% endblock %}
+</body>
+</html>

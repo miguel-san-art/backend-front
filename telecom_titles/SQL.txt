@@ -1,0 +1,16 @@
+sudo mysql -u root -p
+
+-- Créer la base de données
+CREATE DATABASE telecom_db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+-- Créer l'utilisateur
+CREATE USER 'telecom_user'@'localhost' IDENTIFIED BY 'motdepassefort';
+
+-- Accorder les droits sur la base
+GRANT ALL PRIVILEGES ON telecom_db.* TO 'telecom_user'@'localhost';
+
+-- Appliquer les changements de privilèges
+FLUSH PRIVILEGES;
+
+EXIT;
+mysql -u miguel -p telecom_db
