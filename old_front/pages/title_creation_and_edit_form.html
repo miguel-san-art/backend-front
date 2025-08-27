@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Création/Modification de Titre - ART Telecom Titles Manager</title>
+    <link rel="stylesheet" href="../css/main.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+<script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fartteleco4172back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.6"></script>
+</head>
+<body class="bg-background min-h-screen">
+    <!-- Header with Dual Logos -->
+    <header class="bg-surface shadow-institutional border-b border-secondary-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Polytechnique Logo (Left) -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="../images/polytechnique-logo.jpg" alt="Polytechnique Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="dashboard_overview.html" class="text-secondary-600 hover:text-primary transition-colors">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Tableau de bord
+                    </a>
+                    <a href="telecommunications_titles_management.html" class="text-primary font-medium">
+                        <i class="fas fa-certificate mr-2"></i>Titres
+                    </a>
+                    <a href="user_management_administration.html" class="text-secondary-600 hover:text-primary transition-colors">
+                        <i class="fas fa-users mr-2"></i>Utilisateurs
+                    </a>
+                    <a href="statistics_and_analytics_dashboard.html" class="text-secondary-600 hover:text-primary transition-colors">
+                        <i class="fas fa-chart-bar mr-2"></i>Statistiques
+                    </a>
+                </nav>
+
+                <!-- User Menu -->
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button id="userMenuButton" class="flex items-center text-secondary-600 hover:text-primary transition-colors">
+                            <i class="fas fa-user-circle text-xl mr-2"></i>
+                            <span class="hidden md:inline" id="currentUserName">Administrateur</span>
+                            <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        </button>
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-surface rounded-md shadow-elevated border border-secondary-200 z-50">
+                            <div class="py-1">
+                                <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-user mr-2"></i>Profil
+                                </a>
+                                <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-cog mr-2"></i>Paramètres
+                                </a>
+                                <hr class="my-1 border-secondary-200" />
+                                <a href="login_authentication.html" class="block px-4 py-2 text-sm text-error hover:bg-error-50">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ART Logo (Right) -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="../images/art-logo.jpg" alt="ART Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Breadcrumb -->
+        <nav class="flex mb-8" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="dashboard_overview.html" class="inline-flex items-center text-sm font-medium text-secondary-600 hover:text-primary">
+                        <i class="fas fa-home mr-2"></i>
+                        Tableau de bord
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-secondary-400 mx-2"></i>
+                        <a href="telecommunications_titles_management.html" class="ml-1 text-sm font-medium text-secondary-600 hover:text-primary">Titres</a>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-secondary-400 mx-2"></i>
+                        <span class="ml-1 text-sm font-medium text-primary" id="breadcrumbTitle">Nouveau Titre</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-semibold text-text-primary mb-2" id="pageTitle">Création d'un Nouveau Titre</h1>
+                <p class="text-secondary-600" id="pageDescription">Saisissez les informations du titre de télécommunications</p>
+            </div>
+            <div class="flex items-center space-x-2 mt-4 sm:mt-0">
+                <div id="autoSaveStatus" class="hidden flex items-center text-sm text-success-600">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span>Sauvegardé automatiquement</span>
+                </div>
+                <div id="savingStatus" class="hidden flex items-center text-sm text-secondary-600">
+                    <i class="fas fa-spinner fa-spin mr-2"></i>
+                    <span>Sauvegarde...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="bg-surface rounded-lg shadow-institutional border border-secondary-200">
+            <form id="titleForm" class="p-6 space-y-8">
+                <!-- License Identification Section -->
+                <section class="space-y-6">
+                    <div class="flex items-center pb-4 border-b border-secondary-200">
+                        <div class="flex items-center justify-center w-8 h-8 bg-primary-100 rounded-full mr-3">
+                            <i class="fas fa-id-card text-primary text-sm"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold text-text-primary">Identification du Titre</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Title Number -->
+                        <div>
+                            <label for="titleNumber" class="block text-sm font-medium text-text-primary mb-2">
+                                Numéro du Titre <span class="text-error">*</span>
+                            </label>
+                            <input type="text" id="titleNumber" name="titleNumber" class="input-field" placeholder="Ex: ART-2025-001" required />
+                            <div id="titleNumberError" class="text-error text-xs mt-1 hidden">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                <span></span>
+                            </div>
+                        </div>
+
+                        <!-- Title Type -->
+                        <div>
+                            <label for="titleType" class="block text-sm font-medium text-text-primary mb-2">
+                                Type de Titre <span class="text-error">*</span>
+                            </label>
+                            <select id="titleType" name="titleType" class="input-field" required>
+                                <option value>Sélectionnez un type</option>
+                                <option value="Licence_1ere_categorie">Licence 1ere categorie</option>
+                                <option value="Licence_2e_categorie">Licence 2e categorie</option>
+                                <option value="Agrement_vendeur">Agrement vendeur</option>
+                                <option value="Agrement_installateur">Agrement installateur</option>
+                                <option value="Accord_assignation_de_frequence_(AAF)">Accord assignation de frequuence(AAF)</option>
+                                
+                            </select>
+                            <div id="titleTypeError" class="text-error text-xs mt-1 hidden">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                <span></span>
+                            </div>
+                        </div>
+
+                        <!-- Category -->
+                        <div>
+                            <label for="category" class="block text-sm font-medium text-text-primary mb-2">
+                                Catégorie <span class="text-error">*</span>
+                            </label>
+                            <select id="category" name="category" class="input-field" required>
+                                <option value>Sélectionnez une catégorie</option>
+                                <option value="telephonie_mobile">Téléphonie Mobile</option>
+                                <option value="telephonie_fixe">Téléphonie Fixe</option>
+                                <option value="internet">Internet</option>
+                                <option value="transmission_donnees">Transmission de Données</option>
+                                <option value="radiodiffusion">Radiodiffusion</option>
+                                <option value="television">Télévision</option>
+                            </select>
+                            <div id="categoryError" class="text-error text-xs mt-1 hidden">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Fields Based on Type -->
+                    <div id="additionalFields" class="hidden space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Service Area -->
+                            <div id="serviceAreaField" class="hidden">
+                                <label for="serviceArea" class="block text-sm font-medium text-text-primary mb-2">
+                                    Zone de Service
+                                </label>
+                                <select id="serviceArea" name="serviceArea" class="input-field">
+                                    <option value>Sélectionnez une zone</option>
+                                    <option value="nationale">Nationale</option>
+                                    <option value="centre">Centre</option>
+                                    <option value="littoral">Littoral</option>
+                                    <option value="ouest">Ouest</option>
+                                    <option value="nord_ouest">Nord-Ouest</option>
+                                    <option value="sud_ouest">Sud-Ouest</option>
+                                    <option value="adamaoua">Adamaoua</option>
+                                    <option value="nord">Nord</option>
+                                    <option value="extreme_nord">Extrême-Nord</option>
+                                    <option value="est">Est</option>
+                                    <option value="sud">Sud</option>
+                                </select>
+                            </div>
+
+                            <!-- Frequency Band -->
+                            <div id="frequencyBandField" class="hidden">
+                                <label for="frequencyBand" class="block text-sm font-medium text-text-primary mb-2">
+                                    Bande de Fréquence
+                                </label>
+                                <input type="text" id="frequencyBand" name="frequencyBand" class="input-field" placeholder="Ex: 900 MHz, 1800 MHz" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Holder Information Section -->
+                <section class="space-y-6">
+                    <div class="flex items-center pb-4 border-b border-secondary-200">
+                        <div class="flex items-center justify-center w-8 h-8 bg-accent-100 rounded-full mr-3">
+                            <i class="fas fa-building text-accent text-sm"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold text-text-primary">Informations du Titulaire</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Company Name -->
+                        <div>
+                            <label for="companyName" class="block text-sm font-medium text-text-primary mb-2">
+                                Nom de l'Entreprise <span class="text-error">*</span>
+                            </label>
+                            <input type="text" id="companyName" name="companyName" class="input-field" placeholder="Nom complet de l'entreprise" required />
+                            <div id="companyNameError" class="text-error text-xs mt-1 hidden">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                <span></span>
+                            </div>
+                        </div>
+
+                        <!-- Registration Number -->
+                        <div>
+                            <label for="registrationNumber" class="block text-sm font-medium text-text-primary mb-2">
+                                Numéro d'Enregistrement
+                            </label>
+                            <input type="text" id="registrationNumber" name="registrationNumber" class="input-field" placeholder="Numéro RCCM ou équivalent" />
+                        </div>
+
+                        <!-- Contact Person -->
+                        <div>
+                            <label for="contactPerson" class="block text-sm font-medium text-text-primary mb-2">
+                                Personne de Contact <span class="text-error">*</span>
+                            </label>
+                            <input type="text" id="contactPerson" name="contactPerson" class="input-field" placeholder="Nom du responsable" required />
+                            <div id="contactPersonError" class="text-error text-xs mt-1 hidden">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                <span></span>
+                            </div>
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div>
+                            <label for="phoneNumber" class="block text-sm font-medium text-text-primary mb-2">
+                                Téléphone <span class="text-error">*</span>
+                            </label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" class="input-field" placeholder="+237 6XX XXX XXX" required />
+                            <div id="phoneNumberError" class="text-error text-xs mt-1 hidden">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                <span></span>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-text-primary mb-2">
+                                Email <span class="text-error">*</span>
+                            </label>
+                            <input type="email" id="email" name="email" class="input-field" placeholder="contact@entreprise.com" required />
+                            <div id="emailError" class="text-error text-xs mt-1 hidden">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                <span></span>
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <div>
+                            <label for="address" class="block text-sm font-medium text-text-primary mb-2">
+                                Adresse Complète <span class="text-error">*</span>
+                            </label>
+                            <textarea id="address" name="address" rows="3" class="input-field" placeholder="Adresse complète de l'entreprise" required></textarea>
+                            <div id="addressError" class="text-error text-xs mt-1 hidden">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Administrative Data Section -->
+                <section class="space-y-6">
+                    <div class="flex items-center pb-4 border-b border-secondary-200">
+                        <div class="flex items-center justify-center w-8 h-8 bg-success-100 rounded-full mr-3">
+                            <i class="fas fa-calendar-alt text-success text-sm"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold text-text-primary">Données Administratives</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Issue Date -->
+                        <div>
+                            <label for="issueDate" class="block text-sm font-medium text-text-primary mb-2">
+                                Date de Délivrance <span class="text-error">*</span>
+                            </label>
+                            <input type="date" id="issueDate" name="issueDate" class="input-field" required />
+                            <div id="issueDateError" class="text-error text-xs mt-1 hidden">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                <span></span>
+                            </div>
+                        </div>
+
+                        <!-- Expiration Date -->
+                        <div>
+                            <label for="expirationDate" class="block text-sm font-medium text-text-primary mb-2">
+                                Date d'Expiration <span class="text-error">*</span>
+                            </label>
+                            <input type="date" id="expirationDate" name="expirationDate" class="input-field" required />
+                            <div id="expirationDateError" class="text-error text-xs mt-1 hidden">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                <span></span>
+                            </div>
+                        </div>
+
+                        <!-- Status -->
+                        <div>
+                            <label for="status" class="block text-sm font-medium text-text-primary mb-2">
+                                Statut <span class="text-error">*</span>
+                            </label>
+                            <select id="status" name="status" class="input-field" required>
+                                <option value>Sélectionnez un statut</option>
+                                <option value="active">Actif</option>
+                                <option value="pending">En Attente</option>
+                                <option value="suspended">Suspendu</option>
+                                <option value="expired">Expiré</option>
+                                <option value="cancelled">Annulé</option>
+                            </select>
+                            <div id="statusError" class="text-error text-xs mt-1 hidden">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                <span></span>
+                            </div>
+                        </div>
+
+                        <!-- License Fee -->
+                        <div>
+                            <label for="licenseFee" class="block text-sm font-medium text-text-primary mb-2">
+                                Frais de Licence (CFA) <span class="text-error">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="number" id="licenseFee" name="licenseFee" class="input-field pr-16" placeholder="0" min="0" step="1000" required />
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-secondary-500 text-sm">XAF</span>
+                                </div>
+                            </div>
+                            <div id="licenseFeeError" class="text-error text-xs mt-1 hidden">
+                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                <span></span>
+                            </div>
+                        </div>
+
+                        <!-- Annual Fee -->
+                        <div>
+                            <label for="annualFee" class="block text-sm font-medium text-text-primary mb-2">
+                                Redevance Annuelle (CFA)
+                            </label>
+                            <div class="relative">
+                                <input type="number" id="annualFee" name="annualFee" class="input-field pr-16" placeholder="0" min="0" step="1000" />
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-secondary-500 text-sm">XAF</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Issuing Authority -->
+                        <div>
+                            <label for="issuingAuthority" class="block text-sm font-medium text-text-primary mb-2">
+                                Autorité de Délivrance
+                            </label>
+                            <input type="text" id="issuingAuthority" name="issuingAuthority" class="input-field" placeholder="ART Cameroun" value="ART Cameroun" />
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Supporting Documents Section -->
+                <section class="space-y-6">
+                    <div class="flex items-center pb-4 border-b border-secondary-200">
+                        <div class="flex items-center justify-center w-8 h-8 bg-warning-100 rounded-full mr-3">
+                            <i class="fas fa-file-upload text-warning text-sm"></i>
+                        </div>
+                        <h2 class="text-xl font-semibold text-text-primary">Documents Justificatifs</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Application Document -->
+                        <div>
+                            <label for="applicationDocument" class="block text-sm font-medium text-text-primary mb-2">
+                                Dossier de Demande
+                            </label>
+                            <div class="border-2 border-dashed border-secondary-300 rounded-lg p-6 text-center hover:border-primary-300 transition-colors">
+                                <input type="file" id="applicationDocument" name="applicationDocument" class="hidden" accept=".pdf,.doc,.docx" />
+                                <label for="applicationDocument" class="cursor-pointer">
+                                    <i class="fas fa-cloud-upload-alt text-3xl text-secondary-400 mb-2"></i>
+                                    <p class="text-sm text-secondary-600">Cliquez pour télécharger ou glissez-déposez</p>
+                                    <p class="text-xs text-secondary-500 mt-1">PDF, DOC, DOCX (Max. 10MB)</p>
+                                </label>
+                            </div>
+                            <div id="applicationDocumentPreview" class="hidden mt-2 p-2 bg-secondary-50 rounded border">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-file-pdf text-error mr-2"></i>
+                                        <span class="text-sm text-secondary-700" id="applicationDocumentName"></span>
+                                    </div>
+                                    <button type="button" onclick="removeFile('applicationDocument')" class="text-error hover:text-error-700">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Technical Specifications -->
+                        <div>
+                            <label for="technicalSpecs" class="block text-sm font-medium text-text-primary mb-2">
+                                Spécifications Techniques
+                            </label>
+                            <div class="border-2 border-dashed border-secondary-300 rounded-lg p-6 text-center hover:border-primary-300 transition-colors">
+                                <input type="file" id="technicalSpecs" name="technicalSpecs" class="hidden" accept=".pdf,.doc,.docx" />
+                                <label for="technicalSpecs" class="cursor-pointer">
+                                    <i class="fas fa-cloud-upload-alt text-3xl text-secondary-400 mb-2"></i>
+                                    <p class="text-sm text-secondary-600">Cliquez pour télécharger ou glissez-déposez</p>
+                                    <p class="text-xs text-secondary-500 mt-1">PDF, DOC, DOCX (Max. 10MB)</p>
+                                </label>
+                            </div>
+                            <div id="technicalSpecsPreview" class="hidden mt-2 p-2 bg-secondary-50 rounded border">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-file-pdf text-error mr-2"></i>
+                                        <span class="text-sm text-secondary-700" id="technicalSpecsName"></span>
+                                    </div>
+                                    <button type="button" onclick="removeFile('technicalSpecs')" class="text-error hover:text-error-700">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div>
+                        <label for="notes" class="block text-sm font-medium text-text-primary mb-2">
+                            Notes et Observations
+                        </label>
+                        <textarea id="notes" name="notes" rows="4" class="input-field" placeholder="Ajoutez des notes ou observations particulières..."></textarea>
+                    </div>
+                </section>
+
+                <!-- Form Actions -->
+                <div class="flex flex-col sm:flex-row justify-between items-center pt-6 border-t border-secondary-200 space-y-4 sm:space-y-0 sm:space-x-4">
+                    <div class="flex items-center space-x-4">
+                        <button type="button" onclick="cancelForm()" class="btn-secondary px-6 py-2">
+                            <i class="fas fa-times mr-2"></i>
+                            Annuler
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <button type="button" onclick="saveAndNew()" class="btn-secondary px-6 py-2">
+                            <i class="fas fa-plus mr-2"></i>
+                            Enregistrer et Nouveau
+                        </button>
+                        <button type="submit" id="saveButton" class="btn-primary px-6 py-2">
+                            <span id="saveButtonText">
+                                <i class="fas fa-save mr-2"></i>
+                                Enregistrer
+                            </span>
+                            <span id="saveButtonSpinner" class="hidden">
+                                <i class="fas fa-spinner fa-spin mr-2"></i>
+                                Enregistrement...
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-surface rounded-lg shadow-modal max-w-md w-full mx-4 p-6">
+            <div class="flex items-center mb-4">
+                <div class="flex items-center justify-center w-10 h-10 bg-warning-100 rounded-full mr-3">
+                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-text-primary" id="modalTitle">Confirmer l'action</h3>
+            </div>
+            <p class="text-secondary-600 mb-6" id="modalMessage">Êtes-vous sûr de vouloir effectuer cette action ?</p>
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeModal()" class="btn-secondary">
+                    Annuler
+                </button>
+                <button type="button" id="confirmButton" class="btn-primary">
+                    Confirmer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div id="successToast" class="fixed top-4 right-4 bg-success text-white px-6 py-3 rounded-lg shadow-elevated hidden z-50">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="successMessage">Action réalisée avec succès</span>
+        </div>
+    </div>
+
+    <!-- Mobile Floating Action Button -->
+    <div class="fixed bottom-6 right-6 md:hidden">
+        <button type="button" onclick="document.getElementById('titleForm').requestSubmit()" class="bg-primary text-white w-14 h-14 rounded-full shadow-elevated flex items-center justify-center hover:bg-primary-700 transition-colors">
+            <i class="fas fa-save text-xl"></i>
+        </button>
+    </div>
+
+    <script>
+        // Global variables
+        let isEditMode = false;
+        let autoSaveTimer = null;
+        let currentTitleId = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if editing existing title
+            const urlParams = new URLSearchParams(window.location.search);
+            const titleId = urlParams.get('id');
+            
+            if (titleId) {
+                isEditMode = true;
+                currentTitleId = titleId;
+                loadTitleData(titleId);
+                updatePageForEditMode();
+            }
+
+            // Initialize form handlers
+            initializeFormHandlers();
+            initializeFileUploads();
+            initializeAutoSave();
+            
+            // Load current user
+            loadCurrentUser();
+        });
+
+        // Update page for edit mode
+        function updatePageForEditMode() {
+            document.getElementById('pageTitle').textContent = 'Modification du Titre';
+            document.getElementById('pageDescription').textContent = 'Modifiez les informations du titre de télécommunications';
+            document.getElementById('breadcrumbTitle').textContent = 'Modifier';
+            document.getElementById('saveButtonText').innerHTML = '<i class="fas fa-save mr-2"></i>Mettre à jour';
+        }
+
+        // Load current user
+        function loadCurrentUser() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            if (currentUser.name) {
+                document.getElementById('currentUserName').textContent = currentUser.name;
+            }
+        }
+
+        // Load title data for editing
+        function loadTitleData(titleId) {
+            // Mock data for demonstration with updated title types
+            const mockTitleData = {
+                titleNumber: 'ART-2025-001',
+                titleType: 'licence_1ere_categorie',
+                category: 'telephonie_mobile',
+                serviceArea: 'nationale',
+                frequencyBand: '900 MHz, 1800 MHz',
+                companyName: 'Orange Cameroun SA',
+                registrationNumber: 'RC/DLA/2001/B/123',
+                contactPerson: 'Jean Dupont',
+                phoneNumber: '+237 677 123 456',
+                email: 'contact@orange.cm',
+                address: 'Boulevard de la Liberté, Douala, Cameroun',
+                issueDate: '2025-01-15',
+                expirationDate: '2028-01-15',
+                status: 'active',
+                licenseFee: '50000000',
+                annualFee: '10000000',
+                issuingAuthority: 'ART Cameroun',
+                notes: 'Licence 1ère catégorie pour services de téléphonie mobile - durée de validité 3 ans selon la réglementation.'
+            };
+
+            // Populate form fields
+            Object.keys(mockTitleData).forEach(key => {
+                const field = document.getElementById(key);
+                if (field) {
+                    field.value = mockTitleData[key];
+                }
+            });
+
+            // Show additional fields based on type
+            showAdditionalFields();
+        }
+
+        // Initialize form handlers
+        function initializeFormHandlers() {
+            // Title type change handler
+            document.getElementById('titleType').addEventListener('change', function() {
+                showAdditionalFields();
+                calculateExpirationDate();
+                triggerAutoSave();
+            });
+
+            // Issue date change handler for auto-calculation
+            document.getElementById('issueDate').addEventListener('change', function() {
+                calculateExpirationDate();
+                triggerAutoSave();
+            });
+
+            // Form submission
+            document.getElementById('titleForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitForm();
+            });
+
+            // Real-time validation
+            const requiredFields = ['titleNumber', 'titleType', 'category', 'companyName', 'contactPerson', 'phoneNumber', 'email', 'address', 'issueDate', 'expirationDate', 'status', 'licenseFee'];
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('blur', () => validateField(fieldId));
+                    field.addEventListener('input', () => {
+                        clearFieldError(fieldId);
+                        triggerAutoSave();
+                    });
+                }
+            });
+
+            // User menu toggle
+            document.getElementById('userMenuButton').addEventListener('click', function() {
+                const dropdown = document.getElementById('userDropdown');
+                dropdown.classList.toggle('hidden');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                const userMenu = document.getElementById('userMenuButton');
+                const dropdown = document.getElementById('userDropdown');
+                if (!userMenu.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Calculate expiration date based on title type and issue date
+        function calculateExpirationDate() {
+            const titleType = document.getElementById('titleType').value;
+            const issueDate = document.getElementById('issueDate').value;
+            const expirationField = document.getElementById('expirationDate');
+            
+            if (!titleType || !issueDate) return;
+            
+            const issue = new Date(issueDate);
+            let expiration = new Date(issue);
+            
+            // Set duration based on title type
+            switch(titleType) {
+                case 'licence_1ere_categorie':
+                case 'agrement_vendeur':
+                case 'agrement_installateur':
+                    expiration.setFullYear(expiration.getFullYear() + 3);
+                    break;
+                case 'concession':
+                    expiration.setFullYear(expiration.getFullYear() + 10);
+                    break;
+                case 'licence_2e_categorie':
+                case 'recepisse_declaration':
+                default:
+                    expiration.setFullYear(expiration.getFullYear() + 1);
+                    break;
+            }
+            
+            // Format date for input field
+            const formattedDate = expiration.toISOString().split('T')[0];
+            expirationField.value = formattedDate;
+            
+            // Show notification about auto-calculation
+            showAutoCalculationNotification(titleType);
+        }
+
+        // Show notification for auto-calculated expiration
+        function showAutoCalculationNotification(titleType) {
+            const durations = {
+                'licence_1ere_categorie': '3 ans',
+                'agrement_vendeur': '3 ans',
+                'agrement_installateur': '3 ans',
+                'concession': '10 ans',
+                'licence_2e_categorie': '1 an (par défaut)',
+                'recepisse_declaration': '1 an (par défaut)'
+            };
+            
+            const duration = durations[titleType] || '1 an';
+            
+            // Create temporary notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-accent text-white px-4 py-2 rounded-lg shadow-lg z-50';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-calendar-check mr-2"></i>
+                    <span>Date d'expiration calculée automatiquement: ${duration}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
+        }
+
+        // Show additional fields based on title type
+        function showAdditionalFields() {
+            const titleType = document.getElementById('titleType').value;
+            const additionalFields = document.getElementById('additionalFields');
+            const serviceAreaField = document.getElementById('serviceAreaField');
+            const frequencyBandField = document.getElementById('frequencyBandField');
+
+            if (titleType) {
+                additionalFields.classList.remove('hidden');
+                
+                // Show specific fields based on type
+                if (titleType.includes('licence')) {
+                    serviceAreaField.classList.remove('hidden');
+                    frequencyBandField.classList.remove('hidden');
+                } else {
+                    serviceAreaField.classList.add('hidden');
+                    frequencyBandField.classList.add('hidden');
+                }
+            } else {
+                additionalFields.classList.add('hidden');
+            }
+        }
+
+        // Initialize file uploads
+        function initializeFileUploads() {
+            const fileInputs = ['applicationDocument', 'technicalSpecs'];
+            
+            fileInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                input.addEventListener('change', function(e) {
+                    handleFileUpload(e, inputId);
+                });
+            });
+        }
+
+        // Handle file upload
+        function handleFileUpload(event, inputId) {
+            const file = event.target.files[0];
+            if (file) {
+                // Validate file size (10MB max)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('Le fichier est trop volumineux. Taille maximale : 10MB');
+                    event.target.value = '';
+                    return;
+                }
+
+                // Show file preview
+                const preview = document.getElementById(inputId + 'Preview');
+                const nameSpan = document.getElementById(inputId + 'Name');
+                
+                nameSpan.textContent = file.name;
+                preview.classList.remove('hidden');
+            }
+        }
+
+        // Remove file
+        function removeFile(inputId) {
+            document.getElementById(inputId).value = '';
+            document.getElementById(inputId + 'Preview').classList.add('hidden');
+        }
+
+        // Initialize auto-save
+        function initializeAutoSave() {
+            // Auto-save every 30 seconds
+            setInterval(() => {
+                if (hasFormChanges()) {
+                    autoSave();
+                }
+            }, 30000);
+        }
+
+        // Trigger auto-save
+        function triggerAutoSave() {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => {
+                autoSave();
+            }, 2000);
+        }
+
+        // Auto-save function
+        function autoSave() {
+            if (!hasFormChanges()) return;
+
+            showSavingStatus();
+            
+            // Simulate auto-save
+            setTimeout(() => {
+                hideSavingStatus();
+                showAutoSaveStatus();
+            }, 1000);
+        }
+
+        // Check if form has changes
+        function hasFormChanges() {
+            const form = document.getElementById('titleForm');
+            const formData = new FormData(form);
+            
+            // Simple check - in real app, compare with original data
+            for (let [key, value] of formData.entries()) {
+                if (value.trim() !== '') {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Show saving status
+        function showSavingStatus() {
+            document.getElementById('savingStatus').classList.remove('hidden');
+            document.getElementById('autoSaveStatus').classList.add('hidden');
+        }
+
+        // Hide saving status
+        function hideSavingStatus() {
+            document.getElementById('savingStatus').classList.add('hidden');
+        }
+
+        // Show auto-save status
+        function showAutoSaveStatus() {
+            const status = document.getElementById('autoSaveStatus');
+            status.classList.remove('hidden');
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                status.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Validate field
+        function validateField(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorDiv = document.getElementById(fieldId + 'Error');
+            let isValid = true;
+            let errorMessage = '';
+
+            if (!field || !errorDiv) return true;
+
+            const value = field.value.trim();
+
+            // Required field validation
+            if (field.hasAttribute('required') && !value) {
+                errorMessage = 'Ce champ est obligatoire';
+                isValid = false;
+            }
+            // Email validation
+            else if (fieldId === 'email' && value && !isValidEmail(value)) {
+                errorMessage = 'Format d\'email invalide';
+                isValid = false;
+            }
+            // Phone validation
+            else if (fieldId === 'phoneNumber' && value && !isValidPhone(value)) {
+                errorMessage = 'Format de téléphone invalide';
+                isValid = false;
+            }
+            // Date validation
+            else if ((fieldId === 'issueDate' || fieldId === 'expirationDate') && value) {
+                const issueDate = new Date(document.getElementById('issueDate').value);
+                const expirationDate = new Date(document.getElementById('expirationDate').value);
+                
+                if (fieldId === 'expirationDate' && issueDate && expirationDate <= issueDate) {
+                    errorMessage = 'La date d\'expiration doit être postérieure à la date de délivrance';
+                    isValid = false;
+                }
+            }
+
+            if (!isValid) {
+                showFieldError(fieldId, errorMessage);
+            } else {
+                clearFieldError(fieldId);
+            }
+
+            return isValid;
+        }
+
+        // Show field error
+        function showFieldError(fieldId, message) {
+            const errorDiv = document.getElementById(fieldId + 'Error');
+            const field = document.getElementById(fieldId);
+            
+            if (errorDiv && field) {
+                errorDiv.querySelector('span').textContent = message;
+                errorDiv.classList.remove('hidden');
+                field.classList.add('border-error', 'focus:ring-error');
+                field.classList.remove('border-secondary-200', 'focus:ring-primary-500');
+            }
+        }
+
+        // Clear field error
+        function clearFieldError(fieldId) {
+            const errorDiv = document.getElementById(fieldId + 'Error');
+            const field = document.getElementById(fieldId);
+            
+            if (errorDiv && field) {
+                errorDiv.classList.add('hidden');
+                field.classList.remove('border-error', 'focus:ring-error');
+                field.classList.add('border-secondary-200', 'focus:ring-primary-500');
+            }
+        }
+
+        // Validate entire form
+        function validateForm() {
+            const requiredFields = ['titleNumber', 'titleType', 'category', 'companyName', 'contactPerson', 'phoneNumber', 'email', 'address', 'issueDate', 'expirationDate', 'status', 'licenseFee'];
+            let isValid = true;
+
+            requiredFields.forEach(fieldId => {
+                if (!validateField(fieldId)) {
+                    isValid = false;
+                }
+            });
+
+            return isValid;
+        }
+
+        // Submit form
+        function submitForm() {
+            if (!validateForm()) {
+                showToast('Veuillez corriger les erreurs dans le formulaire', 'error');
+                return;
+            }
+
+            const saveButton = document.getElementById('saveButton');
+            const saveButtonText = document.getElementById('saveButtonText');
+            const saveButtonSpinner = document.getElementById('saveButtonSpinner');
+
+            // Show loading state
+            saveButton.disabled = true;
+            saveButtonText.classList.add('hidden');
+            saveButtonSpinner.classList.remove('hidden');
+
+            // Simulate form submission
+            setTimeout(() => {
+                // Reset button state
+                saveButton.disabled = false;
+                saveButtonText.classList.remove('hidden');
+                saveButtonSpinner.classList.add('hidden');
+
+                // Show success message
+                const message = isEditMode ? 'Titre mis à jour avec succès' : 'Titre créé avec succès';
+                showSuccessToast(message);
+
+                // Redirect after success
+                setTimeout(() => {
+                    window.location.href = 'telecommunications_titles_management.html';
+                }, 2000);
+            }, 2000);
+        }
+
+        // Save and create new
+        function saveAndNew() {
+            if (!validateForm()) {
+                showToast('Veuillez corriger les erreurs dans le formulaire', 'error');
+                return;
+            }
+
+            // Simulate save
+            showSuccessToast('Titre sauvegardé avec succès');
+            
+            // Reset form after short delay
+            setTimeout(() => {
+                document.getElementById('titleForm').reset();
+                document.getElementById('additionalFields').classList.add('hidden');
+                clearAllErrors();
+            }, 1000);
+        }
+
+        // Cancel form
+        function cancelForm() {
+            if (hasFormChanges()) {
+                showConfirmationModal(
+                    'Annuler les modifications',
+                    'Vous avez des modifications non sauvegardées. Êtes-vous sûr de vouloir quitter ?',
+                    () => {
+                        window.location.href = 'telecommunications_titles_management.html';
+                    }
+                );
+            } else {
+                window.location.href = 'telecommunications_titles_management.html';
+            }
+        }
+
+        // Clear all errors
+        function clearAllErrors() {
+            const errorDivs = document.querySelectorAll('[id$="Error"]');
+            errorDivs.forEach(div => div.classList.add('hidden'));
+            
+            const fields = document.querySelectorAll('.input-field');
+            fields.forEach(field => {
+                field.classList.remove('border-error', 'focus:ring-error');
+                field.classList.add('border-secondary-200', 'focus:ring-primary-500');
+            });
+        }
+
+        // Show confirmation modal
+        function showConfirmationModal(title, message, onConfirm) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('confirmButton').onclick = () => {
+                closeModal();
+                onConfirm();
+            };
+            document.getElementById('confirmationModal').classList.remove('hidden');
+            document.getElementById('confirmationModal').classList.add('flex');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('confirmationModal').classList.add('hidden');
+            document.getElementById('confirmationModal').classList.remove('flex');
+        }
+
+        // Show success toast
+        function showSuccessToast(message) {
+            document.getElementById('successMessage').textContent = message;
+            const toast = document.getElementById('successToast');
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Utility functions
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function isValidPhone(phone) {
+            const phoneRegex = /^(\+237|237)?[6-9]\d{8}$/;
+            return phoneRegex.test(phone.replace(/\s/g, ''));
+        }
+
+        // Close modal on outside click
+        document.getElementById('confirmationModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Handle browser back button
+        window.addEventListener('beforeunload', function(e) {
+            if (hasFormChanges()) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+</script>
+
+
+<div>
+    <label for="titleType" class="block text-sm font-medium text-text-primary mb-2">
+        Type de Titre <span class="text-error">*</span>
+    </label>
+    <select id="titleType" name="titleType" class="input-field" required>
+        <option value>Sélectionnez un type</option>
+        <option value="licence_1ere_categorie">Licence 1ère Catégorie (3 ans)</option>
+        <option value="licence_2e_categorie">Licence 2ème Catégorie</option>
+        <option value="agrement_vendeur">Agrément Vendeur (3 ans)</option>
+        <option value="agrement_installateur">Agrément Installateur (3 ans)</option>
+        <option value="concession">Concession (10 ans)</option>
+        <option value="recepisse_declaration">Récépissé Déclaration Préalable</option>
+    </select>
+    <div id="titleTypeError" class="text-error text-xs mt-1 hidden">
+        <i class="fas fa-exclamation-circle mr-1"></i>
+        <span></span>
+    </div>
+    <p class="text-xs text-secondary-500 mt-1">
+        Les durées de validité sont automatiquement calculées selon le type de titre sélectionné
+    </p>
+</div>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>

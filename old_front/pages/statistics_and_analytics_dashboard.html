@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Statistiques et Analyses - ART Telecom Titles Manager</title>
+    <link rel="stylesheet" href="../css/main.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fartteleco4172back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.6"></script>
+</head>
+<body class="bg-background min-h-screen">
+    <!-- Header with Dual Logos -->
+    <header class="bg-surface shadow-institutional border-b border-secondary-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Polytechnique Logo (Left) -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="../images/polytechnique-logo.jpg" alt="Polytechnique Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="dashboard_overview.html" class="text-secondary-600 hover:text-primary transition-colors">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Tableau de bord
+                    </a>
+                    <a href="telecommunications_titles_management.html" class="text-secondary-600 hover:text-primary transition-colors">
+                        <i class="fas fa-certificate mr-2"></i>Titres
+                    </a>
+                    <a href="user_management_administration.html" class="text-secondary-600 hover:text-primary transition-colors">
+                        <i class="fas fa-users mr-2"></i>Utilisateurs
+                    </a>
+                    <a href="statistics_and_analytics_dashboard.html" class="text-primary font-medium">
+                        <i class="fas fa-chart-bar mr-2"></i>Statistiques
+                    </a>
+                </nav>
+
+                <!-- User Menu -->
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button id="userMenuButton" class="flex items-center text-secondary-600 hover:text-primary transition-colors">
+                            <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-2">
+                                <i class="fas fa-user text-primary text-sm"></i>
+                            </div>
+                            <span class="hidden md:block text-sm font-medium" id="currentUserName">Administrateur ART</span>
+                            <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        </button>
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-surface rounded-md shadow-elevated border border-secondary-200 z-50">
+                            <div class="py-1">
+                                <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-user-circle mr-2"></i>Profil
+                                </a>
+                                <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-cog mr-2"></i>Paramètres
+                                </a>
+                                <div class="border-t border-secondary-200"></div>
+                                <a href="login_authentication.html" class="block px-4 py-2 text-sm text-error hover:bg-error-50">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ART Logo (Right) -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="../images/art-logo.jpg" alt="ART Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="bg-surface border-b border-secondary-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="flex items-center space-x-2">
+                    <li>
+                        <a href="dashboard_overview.html" class="text-secondary-500 hover:text-primary transition-colors">
+                            <i class="fas fa-home"></i>
+                            <span class="ml-2">Tableau de bord</span>
+                        </a>
+                    </li>
+                    <li>
+                        <i class="fas fa-chevron-right text-secondary-400 text-sm"></i>
+                    </li>
+                    <li>
+                        <span class="text-primary font-medium">Statistiques</span>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 class="text-3xl font-semibold text-text-primary mb-2">
+                        <i class="fas fa-chart-bar text-primary mr-3"></i>
+                        Statistiques et Analyses
+                    </h1>
+                    <p class="text-secondary-600">Analyse des données des titres d'exploitations</p>
+                </div>
+                <div class="mt-4 sm:mt-0 flex space-x-3">
+                    <button id="uploadExcelBtn" class="btn-secondary">
+                        <i class="fas fa-upload mr-2"></i>
+                        Importer Excel
+                    </button>
+                    <button id="exportBtn" class="btn-secondary">
+                        <i class="fas fa-download mr-2"></i>
+                        Exporter
+                    </button>
+                    <button id="refreshBtn" class="btn-primary">
+                        <i class="fas fa-sync-alt mr-2"></i>
+                        Actualiser
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="card mb-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-6">
+                <div class="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <!-- Date Range Filter -->
+                    <div class="flex items-center space-x-2">
+                        <label class="text-sm font-medium text-text-primary whitespace-nowrap">Période:</label>
+                        <input type="date" id="startDate" class="input-field text-sm" value="2025-01-01" />
+                        <span class="text-secondary-500">à</span>
+                        <input type="date" id="endDate" class="input-field text-sm" value="2025-07-29" />
+                    </div>
+
+                    <!-- Operator Filter -->
+                    <div class="flex items-center space-x-2">
+                        <label class="text-sm font-medium text-text-primary whitespace-nowrap">Opérateur:</label>
+                        <select id="operatorFilter" class="input-field text-sm">
+                            <option value>Tous les opérateurs</option>
+                            <option value="orange">Orange Cameroun</option>
+                            <option value="mtn">MTN Cameroun</option>
+                            <option value="Creolink">Creolink</option>
+                            <option value="Youmee">Yoomee</option>
+                            <option value="Matrix telecoms">Matrix telecoms</option>
+                            <option value="Camtel">Camtel</option>
+                        </select>
+                    </div>
+
+                    <!-- Service Type Filter -->
+                    <div class="flex items-center space-x-2">
+                        <label class="text-sm font-medium text-text-primary whitespace-nowrap">Type de Service:</label>
+                        <select id="serviceFilter" class="input-field text-sm">
+                            <option value>Tous les services</option>
+                            <option value="telephonie_mobile">Téléphonie Mobile</option>
+                            <option value="telephonie_fixe">Téléphonie Fixe</option>
+                            <option value="internet">Internet</option>
+                            <option value="television_radiodiffusion">Télévision Radiodiffusion</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="applyFilters" class="btn-primary">
+                    <i class="fas fa-filter mr-2"></i>
+                    Appliquer les filtres
+                </button>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Titles -->
+            <div class="card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-secondary-600">Total des Titres</p>
+                        <p class="text-2xl font-semibold text-text-primary" id="totalTitles">1 247</p>
+                        <div class="flex items-center mt-1">
+                            <i class="fas fa-arrow-up text-success text-sm mr-1"></i>
+                            <span class="text-success text-sm font-medium">+12%</span>
+                            <span class="text-secondary-500 text-sm ml-1">vs mois dernier</span>
+                        </div>
+                    </div>
+                    <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-certificate text-primary text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Titles -->
+            <div class="card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-secondary-600">Titres Actifs</p>
+                        <p class="text-2xl font-semibold text-text-primary" id="activeTitles">1 089</p>
+                        <div class="flex items-center mt-1">
+                            <i class="fas fa-arrow-up text-success text-sm mr-1"></i>
+                            <span class="text-success text-sm font-medium">+8%</span>
+                            <span class="text-secondary-500 text-sm ml-1">vs mois dernier</span>
+                        </div>
+                    </div>
+                    <div class="w-12 h-12 bg-success-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-check-circle text-success text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue -->
+            <div class="card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-secondary-600">Revenus (XAF)</p>
+                        <p class="text-2xl font-semibold text-text-primary" id="totalRevenue">2 450 000 000</p>
+                        <div class="flex items-center mt-1">
+                            <i class="fas fa-arrow-up text-success text-sm mr-1"></i>
+                            <span class="text-success text-sm font-medium">+15%</span>
+                            <span class="text-secondary-500 text-sm ml-1">vs mois dernier</span>
+                        </div>
+                    </div>
+                    <div class="w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-coins text-accent text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expiring Soon -->
+            <div class="card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-secondary-600">Expirent Bientôt</p>
+                        <p class="text-2xl font-semibold text-text-primary" id="expiringSoon">23</p>
+                        <div class="flex items-center mt-1">
+                            <i class="fas fa-arrow-down text-warning text-sm mr-1"></i>
+                            <span class="text-warning text-sm font-medium">-5%</span>
+                            <span class="text-secondary-500 text-sm ml-1">vs mois dernier</span>
+                        </div>
+                    </div>
+                    <div class="w-12 h-12 bg-warning-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-exclamation-triangle text-warning text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Titles per Operator Chart -->
+            <div class="card">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-text-primary">
+                        <i class="fas fa-building text-primary mr-2"></i>
+                        Titres par Opérateur
+                    </h3>
+                    <div class="flex space-x-2">
+                        <button class="text-secondary-500 hover:text-primary transition-colors" onclick="toggleChartView('operatorChart')">
+                            <i class="fas fa-expand-alt"></i>
+                        </button>
+                        <button class="text-secondary-500 hover:text-primary transition-colors" onclick="exportChart('operatorChart')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="relative h-80">
+                    <canvas id="operatorChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Titles per Frequency Range Chart -->
+            <div class="card">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-text-primary">
+                        <i class="fas fa-wave-square text-primary mr-2"></i>
+                        Titres par Plage de Fréquence
+                    </h3>
+                    <div class="flex space-x-2">
+                        <button class="text-secondary-500 hover:text-primary transition-colors" onclick="toggleChartView('frequencyChart')">
+                            <i class="fas fa-expand-alt"></i>
+                        </button>
+                        <button class="text-secondary-500 hover:text-primary transition-colors" onclick="exportChart('frequencyChart')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="relative h-80">
+                    <canvas id="frequencyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Trends Chart -->
+        <div class="card mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-text-primary">
+                    <i class="fas fa-chart-line text-primary mr-2"></i>
+                    Évolution des Titres par Type de Service
+                </h3>
+                <div class="flex space-x-2">
+                    <button class="text-secondary-500 hover:text-primary transition-colors" onclick="toggleChartView('serviceTrendsChart')">
+                        <i class="fas fa-expand-alt"></i>
+                    </button>
+                    <button class="text-secondary-500 hover:text-primary transition-colors" onclick="exportChart('serviceTrendsChart')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="relative h-96">
+                <canvas id="serviceTrendsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Geographic Distribution -->
+        <div class="card">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-text-primary">
+                    <i class="fas fa-map-marker-alt text-primary mr-2"></i>
+                    Distribution Géographique des Titres
+                </h3>
+                <div class="flex space-x-2">
+                    <button class="text-secondary-500 hover:text-primary transition-colors" onclick="toggleChartView('geographicChart')">
+                        <i class="fas fa-expand-alt"></i>
+                    </button>
+                    <button class="text-secondary-500 hover:text-primary transition-colors" onclick="exportChart('geographicChart')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="relative h-80">
+                <canvas id="geographicChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Ajout du diagramme de taux de renouvellement -->
+        <div class="card mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-text-primary">
+                    <i class="fas fa-sync-alt text-primary mr-2"></i>
+                    Taux de Renouvellement des Titres avant Expiration
+                </h3>
+            </div>
+            <div class="relative h-80">
+                <canvas id="renewalRateChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Data Table Section -->
+        <div class="card mt-8" id="dataTableSection">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-text-primary">
+                    <i class="fas fa-table text-primary mr-2"></i>
+                    Données Détaillées
+                </h3>
+                <div class="flex space-x-2">
+                    <button class="btn-secondary text-sm" onclick="exportTableData()">
+                        <i class="fas fa-file-excel mr-2"></i>
+                        Exporter Excel
+                    </button>
+                    <button class="btn-secondary text-sm" onclick="exportTablePDF()">
+                        <i class="fas fa-file-pdf mr-2"></i>
+                        Exporter PDF
+                    </button>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-secondary-200">
+                    <thead class="bg-secondary-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                                Opérateur
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                                Type
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                                Titres Actifs
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                                Titres Expirés
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                                Revenus (XAF)
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                                Région Principale
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-surface divide-y divide-secondary-200" id="dataTableBody">
+                        <!-- Table data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Chart Modal for Full Screen View -->
+    <div id="chartModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-surface rounded-lg shadow-modal max-w-6xl w-full mx-4 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalChartTitle" class="text-lg font-semibold text-text-primary">Graphique</h3>
+                <button onclick="closeChartModal()" class="text-secondary-500 hover:text-secondary-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="relative h-96">
+                <canvas id="modalChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-30 hidden items-center justify-center z-40">
+        <div class="bg-surface rounded-lg p-6 flex items-center space-x-3">
+            <i class="fas fa-spinner fa-spin text-primary text-xl"></i>
+            <span class="text-text-primary font-medium">Chargement des données...</span>
+        </div>
+    </div>
+
+    <!-- Modal d'upload Excel -->
+    <div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-surface rounded-lg shadow-modal max-w-md w-full mx-4 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-text-primary">
+                    <i class="fas fa-upload text-primary mr-2"></i>
+                    Importer un fichier Excel
+                </h3>
+                <button id="closeUploadModal" class="text-secondary-500 hover:text-secondary-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="excelUploadForm" class="space-y-4">
+                <div>
+                    <label for="excelFile" class="block text-sm font-medium text-text-primary mb-2">
+                        Sélectionner un fichier Excel
+                    </label>
+                    <input 
+                        type="file" 
+                        id="excelFile" 
+                        name="file" 
+                        accept=".xlsx,.xls,.csv"
+                        class="w-full px-3 py-2 border border-secondary-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                        required
+                    />
+                    <p class="text-xs text-secondary-500 mt-1">
+                        Formats supportés : .xlsx, .xls, .csv (Max 10MB)
+                    </p>
+                </div>
+                
+                <div class="bg-accent-50 border border-accent-200 rounded-md p-3">
+                    <h4 class="text-sm font-medium text-accent-800 mb-2">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Instructions
+                    </h4>
+                    <ul class="text-xs text-accent-700 space-y-1">
+                        <li>• Le fichier doit contenir les colonnes : Opérateur, Type de Service, Numéro de Titre</li>
+                        <li>• Les types de service supportés : Téléphonie Mobile, Téléphonie Fixe, Internet, Télévision Radiodiffusion</li>
+                        <li>• Les dates doivent être au format YYYY-MM-DD</li>
+                        <li>• Les revenus doivent être des nombres</li>
+                    </ul>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button 
+                        type="button" 
+                        id="closeUploadModal"
+                        class="btn-secondary"
+                    >
+                        Annuler
+                    </button>
+                    <button 
+                        type="submit" 
+                        class="btn-primary"
+                    >
+                        <i class="fas fa-upload mr-2"></i>
+                        Importer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Mock data for charts and analytics
+        const mockData = {
+            operators: [
+                { name: 'Orange Cameroun', titles: 150, revenue: 4500000, region: 'Douala' },
+                { name: 'MTN Cameroun', titles: 120, revenue: 3800000, region: 'Yaoundé' },
+                { name: 'Creolink ', titles: 100, revenue: 3200000, region: 'Bafoussam' },
+                { name: 'Youmee', titles: 80, revenue: 2500000, region: 'Ngaoundéré' },
+                { name: 'Matrix telecoms', titles: 70, revenue: 2000000, region: 'Bamenda' },
+                { name: 'Camtel', titles: 60, revenue: 1800000, region: 'Maroua' },
+                { name: 'Autres', titles: 50, revenue: 1500000, region: 'Autres' }
+            ],
+            frequencyRanges: [
+                { range: '100-200 MHz', titles: 120, type: 'Radio' },
+                { range: '200-300 MHz', titles: 100, type: 'Radio' },
+                { range: '300-400 MHz', titles: 80, type: 'Radio' },
+                { range: '400-500 MHz', titles: 70, type: 'Radio' },
+                { range: '500-600 MHz', titles: 60, type: 'Télévision' },
+                { range: '600-700 MHz', titles: 50, type: 'Télévision' },
+                { range: '700-800 MHz', titles: 40, type: 'Mobile' },
+                { range: '800-900 MHz', titles: 30, type: 'Mobile' },
+                { range: '900-1000 MHz', titles: 20, type: 'Mobile' },
+                { range: '1000-1100 MHz', titles: 10, type: 'Mobile' }
+            ],
+            serviceTrends: [
+                { month: 'Jan 2025', telephonie_mobile: 45, telephonie_fixe: 32, internet: 28, television_radiodiffusion: 15 },
+                { month: 'Fév 2025', telephonie_mobile: 52, telephonie_fixe: 38, internet: 35, television_radiodiffusion: 18 },
+                { month: 'Mar 2025', telephonie_mobile: 48, telephonie_fixe: 35, internet: 30, television_radiodiffusion: 20 },
+                { month: 'Avr 2025', telephonie_mobile: 61, telephonie_fixe: 42, internet: 40, television_radiodiffusion: 25 },
+                { month: 'Mai 2025', telephonie_mobile: 55, telephonie_fixe: 38, internet: 35, television_radiodiffusion: 22 },
+                { month: 'Jun 2025', telephonie_mobile: 58, telephonie_fixe: 45, internet: 42, television_radiodiffusion: 28 },
+                { month: 'Jul 2025', telephonie_mobile: 50, telephonie_fixe: 40, internet: 38, television_radiodiffusion: 30 }
+            ],
+            geographicData: [
+                { city: 'Douala', titles: 150, population: '3.5M' },
+                { city: 'Yaoundé', titles: 120, population: '2.8M' },
+                { city: 'Bafoussam', titles: 100, population: '1.2M' },
+                { city: 'Ngaoundéré', titles: 80, population: '800K' },
+                { city: 'Bamenda', titles: 70, population: '700K' },
+                { city: 'Maroua', titles: 60, population: '600K' },
+                { city: 'Garoua', titles: 50, population: '500K' },
+                { city: 'Buea', titles: 40, population: '400K' },
+                { city: 'Ebolowa', titles: 30, population: '300K' },
+                { city: 'Dschang', titles: 20, population: '200K' },
+                { city: 'Nkongsamba', titles: 10, population: '100K' }
+            ]
+        };
+
+        let charts = {};
+
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            populateDataTable();
+            setupEventListeners();
+            loadUserSession();
+        });
+
+        function loadUserSession() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            if (currentUser.name) {
+                document.getElementById('currentUserName').textContent = currentUser.name;
+            }
+        }
+
+        function initializeCharts() {
+            showLoading();
+            
+            setTimeout(() => {
+                createOperatorChart();
+                createFrequencyChart();
+                createServiceTrendsChart();
+                createGeographicChart();
+                createRenewalRateChart(); // Ajouté
+                hideLoading();
+            }, 1000);
+        }
+
+        function createOperatorChart() {
+            const ctx = document.getElementById('operatorChart').getContext('2d');
+            const operatorData = {
+                'Orange': 150,
+                'MTN': 120,
+                'Airtel': 100,
+                'Moov': 80,
+                'Nexttel': 70,
+                'Wari': 60,
+                'Other': 50
+            };
+            
+            charts.operatorChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(operatorData),
+                    datasets: [{
+                        label: 'Nombre de Titres',
+                        data: Object.values(operatorData),
+                        backgroundColor: '#3B82F6',
+                        borderColor: '#1E3A8A',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const operator = context.label;
+                                    return `Nombre de titres: ${operatorData[operator]}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#E2E8F0'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const operator = Object.keys(operatorData)[index];
+                            filterDataByUser(operator);
+                        }
+                    }
+                }
+            });
+        }
+
+        function createFrequencyChart() {
+            const ctx = document.getElementById('frequencyChart').getContext('2d');
+            const frequencyData = {
+                '100-200 MHz': 120,
+                '200-300 MHz': 100,
+                '300-400 MHz': 80,
+                '400-500 MHz': 70,
+                '500-600 MHz': 60,
+                '600-700 MHz': 50,
+                '700-800 MHz': 40,
+                '800-900 MHz': 30,
+                '900-1000 MHz': 20,
+                '1000-1100 MHz': 10
+            };
+            
+            charts.frequencyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(frequencyData),
+                    datasets: [{
+                        label: 'Nombre de Titres',
+                        data: Object.values(frequencyData),
+                        backgroundColor: '#10B981',
+                        borderColor: '#059669',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const frequency = context.label;
+                                    return `Nombre de titres: ${frequencyData[frequency]}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#E2E8F0'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const frequency = Object.keys(frequencyData)[index];
+                            filterDataByUser(frequency);
+                        }
+                    }
+                }
+            });
+        }
+
+        function createServiceTrendsChart() {
+            const ctx = document.getElementById('serviceTrendsChart').getContext('2d');
+            
+            charts.serviceTrendsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: mockData.serviceTrends.map(item => item.month),
+                    datasets: [
+                        {
+                            label: 'Téléphonie Mobile',
+                            data: mockData.serviceTrends.map(item => item.telephonie_mobile),
+                            borderColor: '#3B82F6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4,
+                            fill: false,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Téléphonie Fixe',
+                            data: mockData.serviceTrends.map(item => item.telephonie_fixe),
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4,
+                            fill: false,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Internet',
+                            data: mockData.serviceTrends.map(item => item.internet),
+                            borderColor: '#8B5CF6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            tension: 0.4,
+                            fill: false,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Télévision Radiodiffusion',
+                            data: mockData.serviceTrends.map(item => item.television_radiodiffusion),
+                            borderColor: '#F59E0B',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            tension: 0.4,
+                            fill: false,
+                            yAxisID: 'y'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            grid: {
+                                color: '#E2E8F0'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Nombre de Titres'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createGeographicChart() {
+            const ctx = document.getElementById('geographicChart').getContext('2d');
+            
+            charts.geographicChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: mockData.geographicData.map(item => item.city),
+                    datasets: [{
+                        label: 'Nombre de Titres',
+                        data: mockData.geographicData.map(item => item.titles),
+                        backgroundColor: '#F59E0B',
+                        borderColor: '#D97706',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const cityData = mockData.geographicData[context.dataIndex];
+                                    return [
+                                        `Nombre de titres: ${cityData.titles}`,
+                                        `Population: ${cityData.population}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#E2E8F0'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const city = mockData.geographicData[index].city;
+                            filterDataByUser(city);
+                        }
+                    }
+                }
+            });
+        }
+
+        function createRenewalRateChart() {
+            const ctx = document.getElementById('renewalRateChart').getContext('2d');
+            charts.renewalRate = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'],
+                    datasets: [
+                        {
+                            label: 'Taux de renouvellement (%)',
+                            data: [60, 65, 70, 80, 75, 85, 90],
+                            borderColor: '#0EA5E9',
+                            backgroundColor: 'rgba(14,165,233,0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: true },
+                        title: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Taux (%)' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Mois' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function populateDataTable() {
+            const tableBody = document.getElementById('dataTableBody');
+            tableBody.innerHTML = '';
+
+            mockData.operators.forEach(operator => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-secondary-50 transition-colors';
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-building text-primary text-sm"></i>
+                            </div>
+                            <div class="text-sm font-medium text-text-primary">${operator.name}</div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="status-badge bg-primary-100 text-primary-800">
+                            Opérateur
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary font-data">
+                        ${operator.titles}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary font-data">
+                        ${Math.floor(operator.titles * 0.08)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-text-primary font-data">
+                        ${formatCurrency(operator.revenue)} XAF
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-600">
+                        ${operator.region}
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        function setupEventListeners() {
+            // User menu toggle
+            document.getElementById('userMenuButton').addEventListener('click', function() {
+                const dropdown = document.getElementById('userDropdown');
+                dropdown.classList.toggle('hidden');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const userMenu = document.getElementById('userMenuButton');
+                const dropdown = document.getElementById('userDropdown');
+                
+                if (!userMenu.contains(event.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+
+            // Filter buttons
+            document.getElementById('applyFilters').addEventListener('click', applyFilters);
+            document.getElementById('refreshBtn').addEventListener('click', refreshData);
+            document.getElementById('exportBtn').addEventListener('click', showExportOptions);
+            document.getElementById('uploadExcelBtn').addEventListener('click', showUploadExcelModal); // Ajouté
+        }
+
+        function applyFilters() {
+            showLoading();
+            
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const operator = document.getElementById('operatorFilter').value;
+            const serviceType = document.getElementById('serviceFilter').value;
+
+            // Simulate filtering delay
+            setTimeout(() => {
+                // In a real app, this would filter the actual data
+                console.log('Applying filters:', { startDate, endDate, operator, serviceType });
+                hideLoading();
+                
+                // Show success message
+                showNotification('Filtres appliqués avec succès', 'success');
+            }, 1000);
+        }
+
+        function refreshData() {
+            showLoading();
+            
+            setTimeout(() => {
+                // Refresh all charts
+                Object.values(charts).forEach(chart => {
+                    chart.update();
+                });
+                
+                // Refresh table
+                populateDataTable();
+                
+                hideLoading();
+                showNotification('Données actualisées', 'success');
+            }, 1500);
+        }
+
+        function showExportOptions() {
+            const options = [
+                { label: 'Exporter en PDF', action: () => exportToPDF() },
+                { label: 'Exporter en Excel', action: () => exportToExcel() },
+                { label: 'Exporter les graphiques', action: () => exportCharts() }
+            ];
+
+            // Simple alert for demo - in real app, show proper modal
+            const choice = prompt('Options d\'export:\n1. PDF\n2. Excel\n3. Graphiques\n\nEntrez votre choix (1-3):');
+            
+            if (choice >= 1 && choice <= 3) {
+                options[choice - 1].action();
+            }
+        }
+
+        function exportToPDF() {
+            showNotification('Export PDF en cours...', 'info');
+            setTimeout(() => {
+                showNotification('Rapport PDF généré avec succès', 'success');
+            }, 2000);
+        }
+
+        function exportToExcel() {
+            showNotification('Export Excel en cours...', 'info');
+            setTimeout(() => {
+                showNotification('Fichier Excel généré avec succès', 'success');
+            }, 2000);
+        }
+
+        function exportCharts() {
+            showNotification('Export des graphiques en cours...', 'info');
+            setTimeout(() => {
+                showNotification('Graphiques exportés avec succès', 'success');
+            }, 2000);
+        }
+
+        function toggleChartView(chartId) {
+            const modal = document.getElementById('chartModal');
+            const modalChart = document.getElementById('modalChart');
+            const modalTitle = document.getElementById('modalChartTitle');
+            
+            // Set title based on chart
+            const titles = {
+                'operatorChart': 'Titres par Opérateur',
+                'frequencyChart': 'Titres par Plage de Fréquence',
+                'serviceTrendsChart': 'Évolution des Titres par Type de Service',
+                'geographicChart': 'Distribution Géographique des Titres'
+            };
+            
+            modalTitle.textContent = titles[chartId];
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Clone chart data to modal
+            const originalChart = charts[chartId];
+            if (originalChart) {
+                const modalCtx = modalChart.getContext('2d');
+                new Chart(modalCtx, {
+                    type: originalChart.config.type,
+                    data: originalChart.data,
+                    options: {
+                        ...originalChart.options,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+        }
+
+        function closeChartModal() {
+            const modal = document.getElementById('chartModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            
+            // Destroy modal chart
+            const modalChart = Chart.getChart('modalChart');
+            if (modalChart) {
+                modalChart.destroy();
+            }
+        }
+
+        function exportChart(chartId) {
+            const chart = charts[chartId];
+            if (chart) {
+                const url = chart.toBase64Image();
+                const link = document.createElement('a');
+                link.download = `${chartId}_export.png`;
+                link.href = url;
+                link.click();
+                
+                showNotification('Graphique exporté avec succès', 'success');
+            }
+        }
+
+        function exportTableData() {
+            showNotification('Export Excel en cours...', 'info');
+            setTimeout(() => {
+                showNotification('Données exportées en Excel', 'success');
+            }, 1500);
+        }
+
+        function exportTablePDF() {
+            showNotification('Export PDF en cours...', 'info');
+            setTimeout(() => {
+                showNotification('Données exportées en PDF', 'success');
+            }, 1500);
+        }
+
+        function filterDataByUser(userName) {
+            // Simulate filtering data table by user
+            const rows = document.querySelectorAll('#dataTableBody tr');
+            rows.forEach(row => {
+                const userCell = row.querySelector('td .text-sm.font-medium');
+                if (userCell && userCell.textContent !== userName) {
+                    row.style.opacity = '0.3';
+                } else {
+                    row.style.opacity = '1';
+                }
+            });
+            
+            showNotification(`Données filtrées pour ${userName}`, 'info');
+        }
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            document.getElementById('loadingOverlay').classList.add('flex');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+            document.getElementById('loadingOverlay').classList.remove('flex');
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-md shadow-elevated max-w-sm transition-all duration-300 transform translate-x-full`;
+            
+            const colors = {
+                success: 'bg-success-50 border border-success-200 text-success-800',
+                error: 'bg-error-50 border border-error-200 text-error-800',
+                warning: 'bg-warning-50 border border-warning-200 text-warning-800',
+                info: 'bg-accent-50 border border-accent-200 text-accent-800'
+            };
+            
+            const icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                warning: 'fas fa-exclamation-triangle',
+                info: 'fas fa-info-circle'
+            };
+            
+            notification.className += ` ${colors[type]}`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="${icons[type]} mr-2"></i>
+                    <span class="text-sm font-medium">${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-current opacity-70 hover:opacity-100">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, 5000);
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('fr-FR', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        // Close modal on outside click
+        document.getElementById('chartModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeChartModal();
+            }
+        });
+
+        // Fonction pour afficher le modal d'upload Excel
+        function showUploadExcelModal() {
+            const modal = document.getElementById('uploadModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        // Fermer le modal d'upload Excel
+        document.getElementById('closeUploadModal').addEventListener('click', function() {
+            const modal = document.getElementById('uploadModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        });
+
+        // Gérer la soumission du formulaire d'upload
+        document.getElementById('excelUploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Ici, vous pouvez ajouter la logique pour traiter l'upload du fichier Excel
+            showNotification('Fonctionnalité d\'upload Excel en cours de développement', 'info');
+        });
+    </script>
+    <script src="../js/excel-integration.js"></script>
+</body>
+</html>

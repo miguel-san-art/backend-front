@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Suivi des Demandes de Titres - ART Telecom</title>
+    <link rel="stylesheet" href="../css/main.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        .status-new { background-color: #e0f2fe; color: #0277bd; }
+        .status-review { background-color: #fff3e0; color: #ef6c00; }
+        .status-validation { background-color: #f3e5f5; color: #7b1fa2; }
+        .status-approved { background-color: #e8f5e8; color: #2e7d32; }
+        .status-rejected { background-color: #ffebee; color: #c62828; }
+        
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #dc2626;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .overdue-row {
+            background-color: #fef2f2;
+            border-left: 4px solid #dc2626;
+        }
+        
+        .urgent-row {
+            background-color: #fff7ed;
+            border-left: 4px solid #ea580c;
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen">
+    <!-- Header with Dual Logos -->
+    <header class="bg-surface shadow-institutional border-b border-secondary-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Polytechnique Logo (Left) -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="../images/polytechnique-logo.jpg" alt="Polytechnique Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+
+                <!-- Page Title -->
+                <div class="flex-1 text-center">
+                    <h1 class="text-xl font-semibold text-text-primary">
+                        <i class="fas fa-clipboard-list mr-2 text-primary"></i>
+                        Suivi des Demandes de Titres
+                    </h1>
+                </div>
+
+                <!-- ART Logo (Right) -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="../images/art-logo.jpg" alt="ART Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notifications Panel -->
+    <div id="notifications-panel" class="bg-warning-50 border-l-4 border-warning p-4 hidden">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-triangle text-warning"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-warning-600">
+                    <span id="notifications-count">0</span> demande(s) nécessitent votre attention
+                </p>
+                <ul id="notifications-list" class="mt-2 text-sm text-warning-600 space-y-1">
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Action Bar -->
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex items-center space-x-4">
+                <button onclick="showNewRequestModal()" class="btn-primary flex items-center">
+                    <i class="fas fa-plus mr-2"></i>
+                    Nouvelle Demande
+                </button>
+                
+                <div class="relative">
+                    <button onclick="showNotifications()" class="btn-secondary flex items-center relative">
+                        <i class="fas fa-bell mr-2"></i>
+                        Notifications
+                        <span id="notification-badge" class="notification-badge hidden">0</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-4 sm:mt-0 flex items-center space-x-3">
+                <!-- Filter -->
+                <select id="statusFilter" onchange="filterRequests()" class="input-field">
+                    <option value="all">Tous les statuts</option>
+                    <option value="new">Nouvelles</option>
+                    <option value="review">En révision</option>
+                    <option value="validation">En validation</option>
+                    <option value="approved">Approuvées</option>
+                    <option value="rejected">Rejetées</option>
+                </select>
+                
+                <!-- Refresh -->
+                <button onclick="refreshData()" class="btn-secondary">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="card">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-file-alt text-primary text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-secondary-600">Total Demandes</p>
+                        <p class="text-2xl font-semibold text-text-primary" id="total-requests">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-warning-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-clock text-warning text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-secondary-600">En Attente</p>
+                        <p class="text-2xl font-semibold text-text-primary" id="pending-requests">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-success-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check-circle text-success text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-secondary-600">Approuvées</p>
+                        <p class="text-2xl font-semibold text-text-primary" id="approved-requests">0</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-error-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-error text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-secondary-600">Urgentes</p>
+                        <p class="text-2xl font-semibold text-text-primary" id="urgent-requests">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Requests Table -->
+        <div class="card">
+            <div class="px-6 py-4 border-b border-secondary-200">
+                <h3 class="text-lg font-medium text-text-primary">Liste des Demandes</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-secondary-200">
+                    <thead class="bg-secondary-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                                Référence
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                                Demandeur
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                                Type de Titre
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                                Date de Dépôt
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                                Statut
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                                Jours en Traitement
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="requests-table-body" class="bg-surface divide-y divide-secondary-200">
+                        <!-- Les données seront ajoutées dynamiquement -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- New Request Modal -->
+    <div id="newRequestModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-surface rounded-lg shadow-modal max-w-2xl w-full mx-4 p-6 max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold text-text-primary">Nouvelle Demande de Titre</h3>
+                <button onclick="closeNewRequestModal()" class="text-secondary-500 hover:text-secondary-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="newRequestForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Informations du Demandeur -->
+                    <div>
+                        <label for="applicantName" class="block text-sm font-medium text-text-primary mb-2">
+                            <i class="fas fa-user mr-2 text-secondary-500"></i>
+                            Nom du Demandeur
+                        </label>
+                        <input type="text" id="applicantName" class="input-field" required />
+                    </div>
+                    
+                    <div>
+                        <label for="applicantCompany" class="block text-sm font-medium text-text-primary mb-2">
+                            <i class="fas fa-building mr-2 text-secondary-500"></i>
+                            Entreprise
+                        </label>
+                        <input type="text" id="applicantCompany" class="input-field" required />
+                    </div>
+                    
+                    <div>
+                        <label for="applicantEmail" class="block text-sm font-medium text-text-primary mb-2">
+                            <i class="fas fa-envelope mr-2 text-secondary-500"></i>
+                            Email
+                        </label>
+                        <input type="email" id="applicantEmail" class="input-field" required />
+                    </div>
+                    
+                    <div>
+                        <label for="applicantPhone" class="block text-sm font-medium text-text-primary mb-2">
+                            <i class="fas fa-phone mr-2 text-secondary-500"></i>
+                            Téléphone
+                        </label>
+                        <input type="tel" id="applicantPhone" class="input-field" required />
+                    </div>
+                </div>
+                
+                <!-- Type de Titre -->
+                <div>
+                    <label for="titleType" class="block text-sm font-medium text-text-primary mb-2">
+                        <i class="fas fa-certificate mr-2 text-secondary-500"></i>
+                        Type de Titre
+                    </label>
+                    <select id="titleType" class="input-field" required>
+                        <option value="">Sélectionnez le type de titre</option>
+                        <option value="mobile_license">Licence d'Opérateur Mobile</option>
+                        <option value="fixed_license">Licence d'Opérateur Fixe</option>
+                        <option value="internet_license">Licence Fournisseur Internet</option>
+                        <option value="mvno_license">Licence MVNO</option>
+                        <option value="broadcasting_license">Licence de Radiodiffusion</option>
+                        <option value="equipment_license">Licence d'Équipement</option>
+                    </select>
+                </div>
+                
+                <!-- Description -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-text-primary mb-2">
+                        <i class="fas fa-align-left mr-2 text-secondary-500"></i>
+                        Description de la Demande
+                    </label>
+                    <textarea id="description" rows="4" class="input-field" placeholder="Décrivez les détails de votre demande..." required></textarea>
+                </div>
+                
+                <!-- Documents -->
+                <div>
+                    <label for="documents" class="block text-sm font-medium text-text-primary mb-2">
+                        <i class="fas fa-paperclip mr-2 text-secondary-500"></i>
+                        Documents Joints
+                    </label>
+                    <input type="file" id="documents" class="input-field" multiple accept=".pdf,.doc,.docx,.jpg,.png" />
+                    <p class="text-xs text-secondary-500 mt-1">
+                        Formats acceptés: PDF, DOC, DOCX, JPG, PNG (max 10MB par fichier)
+                    </p>
+                </div>
+                
+                <!-- Priorité -->
+                <div>
+                    <label for="priority" class="block text-sm font-medium text-text-primary mb-2">
+                        <i class="fas fa-flag mr-2 text-secondary-500"></i>
+                        Priorité
+                    </label>
+                    <select id="priority" class="input-field" required>
+                        <option value="normal">Normale</option>
+                        <option value="high">Élevée</option>
+                        <option value="urgent">Urgente</option>
+                    </select>
+                </div>
+                
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" onclick="closeNewRequestModal()" class="btn-secondary flex-1">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn-primary flex-1">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Soumettre la Demande
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="statusUpdateModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-surface rounded-lg shadow-modal max-w-md w-full mx-4 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-text-primary">Mettre à Jour le Statut</h3>
+                <button onclick="closeStatusUpdateModal()" class="text-secondary-500 hover:text-secondary-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="statusUpdateForm">
+                <input type="hidden" id="updateRequestId" />
+                
+                <div class="mb-4">
+                    <label for="newStatus" class="block text-sm font-medium text-text-primary mb-2">
+                        Nouveau Statut
+                    </label>
+                    <select id="newStatus" class="input-field" required>
+                        <option value="review">En révision</option>
+                        <option value="validation">En validation</option>
+                        <option value="approved">Approuvée - Titre Accordé</option>
+                        <option value="rejected">Rejetée</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="statusComment" class="block text-sm font-medium text-text-primary mb-2">
+                        Commentaire (optionnel)
+                    </label>
+                    <textarea id="statusComment" rows="3" class="input-field" placeholder="Ajoutez un commentaire..."></textarea>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button type="button" onclick="closeStatusUpdateModal()" class="btn-secondary flex-1">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn-primary flex-1">
+                        Mettre à Jour
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Données de démonstration
+        let requestsData = [
+            {
+                id: 'REQ-2025-001',
+                applicantName: 'MTN Cameroun',
+                applicantCompany: 'MTN Group',
+                applicantEmail: 'legal@mtn.cm',
+                applicantPhone: '+237 677 123 456',
+                titleType: 'mobile_license',
+                titleTypeLabel: 'Licence d\'Opérateur Mobile',
+                description: 'Renouvellement de licence d\'opérateur mobile pour 10 ans',
+                status: 'review',
+                priority: 'high',
+                submissionDate: '2025-01-10',
+                lastUpdate: '2025-01-15',
+                daysInProcess: 5,
+                comments: []
+            },
+            {
+                id: 'REQ-2025-002',
+                applicantName: 'Orange Cameroun',
+                applicantCompany: 'Orange Group',
+                applicantEmail: 'regulatory@orange.cm',
+                applicantPhone: '+237 699 987 654',
+                titleType: 'internet_license',
+                titleTypeLabel: 'Licence Fournisseur Internet',
+                description: 'Demande de licence pour service internet haut débit',
+                status: 'new',
+                priority: 'normal',
+                submissionDate: '2025-01-12',
+                lastUpdate: '2025-01-12',
+                daysInProcess: 3,
+                comments: []
+            },
+            {
+                id: 'REQ-2025-003',
+                applicantName: 'Camtel',
+                applicantCompany: 'Cameroon Telecommunications',
+                applicantEmail: 'licensing@camtel.cm',
+                applicantPhone: '+237 678 555 777',
+                titleType: 'fixed_license',
+                titleTypeLabel: 'Licence d\'Opérateur Fixe',
+                description: 'Extension de couverture réseau fixe national',
+                status: 'validation',
+                priority: 'urgent',
+                submissionDate: '2025-01-08',
+                lastUpdate: '2025-01-14',
+                daysInProcess: 7,
+                comments: []
+            }
+        ];
+
+        // Fonction pour calculer les jours de traitement
+        function calculateDaysInProcess(submissionDate) {
+            const today = new Date();
+            const submission = new Date(submissionDate);
+            const diffTime = Math.abs(today - submission);
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        // Fonction pour obtenir la classe CSS du statut
+        function getStatusClass(status) {
+            const classes = {
+                'new': 'status-new',
+                'review': 'status-review',
+                'validation': 'status-validation',
+                'approved': 'status-approved',
+                'rejected': 'status-rejected'
+            };
+            return classes[status] || '';
+        }
+
+        // Fonction pour obtenir le libellé du statut
+        function getStatusLabel(status) {
+            const labels = {
+                'new': 'Nouvelle',
+                'review': 'En révision',
+                'validation': 'En validation',
+                'approved': 'Approuvée',
+                'rejected': 'Rejetée'
+            };
+            return labels[status] || status;
+        }
+
+        // Fonction pour obtenir l'icône de priorité
+        function getPriorityIcon(priority) {
+            const icons = {
+                'normal': 'fas fa-flag text-secondary-500',
+                'high': 'fas fa-flag text-warning',
+                'urgent': 'fas fa-flag text-error'
+            };
+            return icons[priority] || 'fas fa-flag text-secondary-500';
+        }
+
+        // Fonction pour afficher les demandes
+        function displayRequests(requests = requestsData) {
+            const tbody = document.getElementById('requests-table-body');
+            tbody.innerHTML = '';
+
+            requests.forEach(request => {
+                const daysInProcess = calculateDaysInProcess(request.submissionDate);
+                const isOverdue = daysInProcess > 5;
+                const isUrgent = request.priority === 'urgent' || daysInProcess > 3;
+                
+                const rowClass = isOverdue ? 'overdue-row' : (isUrgent ? 'urgent-row' : '');
+
+                const row = `
+                    <tr class="${rowClass}">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-text-primary">${request.id}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-text-primary">${request.applicantName}</div>
+                            <div class="text-sm text-secondary-500">${request.applicantCompany}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-text-primary">${request.titleTypeLabel}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-text-primary">${new Date(request.submissionDate).toLocaleDateString('fr-FR')}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="status-badge ${getStatusClass(request.status)}">
+                                ${getStatusLabel(request.status)}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <span class="text-sm text-text-primary">${daysInProcess} jour(s)</span>
+                                <i class="${getPriorityIcon(request.priority)} ml-2"></i>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap space-x-2">
+                            <button onclick="updateRequestStatus('${request.id}')" class="btn-secondary text-xs">
+                                <i class="fas fa-edit mr-1"></i>
+                                Modifier
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // Fonction pour mettre à jour les statistiques
+        function updateStatistics() {
+            const total = requestsData.length;
+            const pending = requestsData.filter(r => ['new', 'review', 'validation'].includes(r.status)).length;
+            const approved = requestsData.filter(r => r.status === 'approved').length;
+            const urgent = requestsData.filter(r => {
+                const days = calculateDaysInProcess(r.submissionDate);
+                return r.priority === 'urgent' || days > 3;
+            }).length;
+
+            document.getElementById('total-requests').textContent = total;
+            document.getElementById('pending-requests').textContent = pending;
+            document.getElementById('approved-requests').textContent = approved;
+            document.getElementById('urgent-requests').textContent = urgent;
+        }
+
+        // Fonction pour filtrer les demandes
+        function filterRequests() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            let filteredRequests = requestsData;
+
+            if (statusFilter !== 'all') {
+                filteredRequests = requestsData.filter(r => r.status === statusFilter);
+            }
+
+            displayRequests(filteredRequests);
+        }
+
+        // Fonction pour afficher/masquer les notifications
+        function showNotifications() {
+            const panel = document.getElementById('notifications-panel');
+            const list = document.getElementById('notifications-list');
+            const count = document.getElementById('notifications-count');
+            
+            // Trouver les demandes nécessitant attention
+            const alertRequests = requestsData.filter(r => {
+                const days = calculateDaysInProcess(r.submissionDate);
+                return days > 3 || r.priority === 'urgent';
+            });
+
+            if (alertRequests.length > 0) {
+                count.textContent = alertRequests.length;
+                list.innerHTML = '';
+                
+                alertRequests.forEach(req => {
+                    const days = calculateDaysInProcess(req.submissionDate);
+                    const li = document.createElement('li');
+                    li.innerHTML = `• ${req.id} - ${req.applicantName} (${days} jours)`;
+                    list.appendChild(li);
+                });
+                
+                panel.classList.remove('hidden');
+                setTimeout(() => panel.classList.add('hidden'), 5000);
+            }
+        }
+
+        // Fonctions pour les modales
+        function showNewRequestModal() {
+            document.getElementById('newRequestModal').classList.remove('hidden');
+            document.getElementById('newRequestModal').classList.add('flex');
+        }
+
+        function closeNewRequestModal() {
+            document.getElementById('newRequestModal').classList.add('hidden');
+            document.getElementById('newRequestModal').classList.remove('flex');
+            document.getElementById('newRequestForm').reset();
+        }
+
+        function updateRequestStatus(requestId) {
+            document.getElementById('updateRequestId').value = requestId;
+            document.getElementById('statusUpdateModal').classList.remove('hidden');
+            document.getElementById('statusUpdateModal').classList.add('flex');
+        }
+
+        function closeStatusUpdateModal() {
+            document.getElementById('statusUpdateModal').classList.add('hidden');
+            document.getElementById('statusUpdateModal').classList.remove('flex');
+            document.getElementById('statusUpdateForm').reset();
+        }
+
+        // Fonction pour actualiser les données
+        function refreshData() {
+            // Mettre à jour les jours de traitement
+            requestsData.forEach(request => {
+                request.daysInProcess = calculateDaysInProcess(request.submissionDate);
+            });
+            
+            displayRequests();
+            updateStatistics();
+            updateNotificationBadge();
+        }
+
+        // Fonction pour mettre à jour le badge de notification
+        function updateNotificationBadge() {
+            const urgentCount = requestsData.filter(r => {
+                const days = calculateDaysInProcess(r.submissionDate);
+                return days > 3 || r.priority === 'urgent';
+            }).length;
+
+            const badge = document.getElementById('notification-badge');
+            if (urgentCount > 0) {
+                badge.textContent = urgentCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // Gestionnaire de soumission du formulaire de nouvelle demande
+        document.getElementById('newRequestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newRequest = {
+                id: `REQ-2025-${String(requestsData.length + 1).padStart(3, '0')}`,
+                applicantName: document.getElementById('applicantName').value,
+                applicantCompany: document.getElementById('applicantCompany').value,
+                applicantEmail: document.getElementById('applicantEmail').value,
+                applicantPhone: document.getElementById('applicantPhone').value,
+                titleType: document.getElementById('titleType').value,
+                titleTypeLabel: document.getElementById('titleType').options[document.getElementById('titleType').selectedIndex].text,
+                description: document.getElementById('description').value,
+                status: 'new',
+                priority: document.getElementById('priority').value,
+                submissionDate: new Date().toISOString().split('T')[0],
+                lastUpdate: new Date().toISOString().split('T')[0],
+                daysInProcess: 0,
+                comments: []
+            };
+
+            requestsData.unshift(newRequest);
+            refreshData();
+            closeNewRequestModal();
+            
+            // Afficher un message de succès
+            alert('Nouvelle demande soumise avec succès !');
+        });
+
+        // Gestionnaire de mise à jour du statut
+        document.getElementById('statusUpdateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const requestId = document.getElementById('updateRequestId').value;
+            const newStatus = document.getElementById('newStatus').value;
+            const comment = document.getElementById('statusComment').value;
+            
+            const request = requestsData.find(r => r.id === requestId);
+            if (request) {
+                request.status = newStatus;
+                request.lastUpdate = new Date().toISOString().split('T')[0];
+                
+                if (comment) {
+                    request.comments.push({
+                        date: new Date().toISOString().split('T')[0],
+                        comment: comment,
+                        author: 'Personnel ART'
+                    });
+                }
+                
+                refreshData();
+                closeStatusUpdateModal();
+                
+                // Afficher un message de succès
+                alert('Statut mis à jour avec succès !');
+            }
+        });
+
+        // Initialisation de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            displayRequests();
+            updateStatistics();
+            updateNotificationBadge();
+            
+            // Mettre à jour automatiquement les notifications toutes les 30 secondes
+            setInterval(updateNotificationBadge, 30000);
+        });
+    </script>
+</body>
+</html>

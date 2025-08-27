@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion des Utilisateurs - ART Telecom Titles Manager</title>
+    <link rel="stylesheet" href="../css/main.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+<script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fartteleco4172back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.6"></script>
+</head>
+<body class="bg-background min-h-screen">
+    <!-- Header with Dual Logos -->
+    <header class="bg-surface shadow-institutional border-b border-secondary-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Polytechnique Logo (Left) -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="../images/polytechnique-logo.jpg" alt="Polytechnique Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="dashboard_overview.html" class="text-secondary-600 hover:text-primary transition-colors">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Tableau de bord
+                    </a>
+                    <a href="telecommunications_titles_management.html" class="text-secondary-600 hover:text-primary transition-colors">
+                        <i class="fas fa-certificate mr-2"></i>Titres
+                    </a>
+                    <a href="user_management_administration.html" class="text-primary font-medium">
+                        <i class="fas fa-users mr-2"></i>Utilisateurs
+                    </a>
+                    <a href="statistics_and_analytics_dashboard.html" class="text-secondary-600 hover:text-primary transition-colors">
+                        <i class="fas fa-chart-bar mr-2"></i>Statistiques
+                    </a>
+                </nav>
+
+                <!-- User Menu -->
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button id="userMenuButton" class="flex items-center text-secondary-600 hover:text-primary transition-colors">
+                            <i class="fas fa-user-circle text-xl mr-2"></i>
+                            <span id="currentUserName">Administrateur ART</span>
+                            <i class="fas fa-chevron-down ml-2 text-sm"></i>
+                        </button>
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-surface rounded-md shadow-elevated border border-secondary-200 z-50">
+                            <div class="py-1">
+                                <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-user mr-2"></i>Profil
+                                </a>
+                                <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-cog mr-2"></i>Paramètres
+                                </a>
+                                <div class="border-t border-secondary-200"></div>
+                                <a href="login_authentication.html" class="block px-4 py-2 text-sm text-error hover:bg-error-50">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ART Logo (Right) -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="../images/art-logo.jpg" alt="ART Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Breadcrumb -->
+        <nav class="flex mb-6" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="dashboard_overview.html" class="inline-flex items-center text-sm font-medium text-secondary-600 hover:text-primary">
+                        <i class="fas fa-home mr-2"></i>
+                        Tableau de bord
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-secondary-400 mx-2"></i>
+                        <span class="text-sm font-medium text-secondary-600">Administration</span>
+                    </div>
+                </li>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-secondary-400 mx-2"></i>
+                        <span class="text-sm font-medium text-primary">Utilisateurs</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-semibold text-text-primary mb-2">Gestion des Utilisateurs</h1>
+                <p class="text-secondary-600">Gérez les comptes utilisateurs et leurs permissions d'accès</p>
+            </div>
+            <div class="mt-4 sm:mt-0">
+                <button id="createUserBtn" class="btn-primary flex items-center">
+                    <i class="fas fa-plus mr-2"></i>
+                    Créer Utilisateur
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Main Content Area -->
+            <div class="lg:col-span-3">
+                <!-- Toolbar -->
+                <div class="card mb-6">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <!-- Search -->
+                        <div class="flex-1">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-secondary-400"></i>
+                                </div>
+                                <input type="text" id="searchInput" class="input-field pl-10" placeholder="Rechercher par nom, email ou rôle..." />
+                            </div>
+                        </div>
+                        
+                        <!-- Role Filter -->
+                        <div class="sm:w-48">
+                            <select id="roleFilter" class="input-field">
+                                <option value>Tous les rôles</option>
+                                <option value="administrator">Administrateur</option>
+                                <option value="accountant">Comptable</option>
+                            </select>
+                        </div>
+
+                        <!-- Status Filter -->
+                        <div class="sm:w-48">
+                            <select id="statusFilter" class="input-field">
+                                <option value>Tous les statuts</option>
+                                <option value="active">Actif</option>
+                                <option value="inactive">Inactif</option>
+                            </select>
+                        </div>
+
+                        <!-- Bulk Actions -->
+                        <div class="flex gap-2">
+                            <button id="bulkActivateBtn" class="btn-secondary text-sm" disabled>
+                                <i class="fas fa-check mr-1"></i>
+                                Activer
+                            </button>
+                            <button id="bulkDeactivateBtn" class="btn-secondary text-sm" disabled>
+                                <i class="fas fa-times mr-1"></i>
+                                Désactiver
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Table -->
+                <div class="card">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-secondary-200">
+                            <thead class="bg-secondary-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left">
+                                        <input type="checkbox" id="selectAll" class="rounded border-secondary-300 text-primary focus:ring-primary-500" />
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider cursor-pointer hover:text-secondary-700" onclick="sortTable('username')">
+                                        Nom d'utilisateur
+                                        <i class="fas fa-sort ml-1"></i>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider cursor-pointer hover:text-secondary-700" onclick="sortTable('email')">
+                                        Email
+                                        <i class="fas fa-sort ml-1"></i>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider cursor-pointer hover:text-secondary-700" onclick="sortTable('role')">
+                                        Rôle
+                                        <i class="fas fa-sort ml-1"></i>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider cursor-pointer hover:text-secondary-700" onclick="sortTable('lastLogin')">
+                                        Dernière connexion
+                                        <i class="fas fa-sort ml-1"></i>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider cursor-pointer hover:text-secondary-700" onclick="sortTable('status')">
+                                        Statut
+                                        <i class="fas fa-sort ml-1"></i>
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody" class="bg-surface divide-y divide-secondary-200">
+                                <!-- Users will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="bg-surface px-4 py-3 flex items-center justify-between border-t border-secondary-200 sm:px-6">
+                        <div class="flex-1 flex justify-between sm:hidden">
+                            <button class="btn-secondary">Précédent</button>
+                            <button class="btn-secondary">Suivant</button>
+                        </div>
+                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-sm text-secondary-700">
+                                    Affichage de <span class="font-medium">1</span> à <span class="font-medium">10</span> sur <span class="font-medium" id="totalUsers">15</span> utilisateurs
+                                </p>
+                            </div>
+                            <div>
+                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                    <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-secondary-300 bg-surface text-sm font-medium text-secondary-500 hover:bg-secondary-50">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button class="relative inline-flex items-center px-4 py-2 border border-secondary-300 bg-primary text-sm font-medium text-white">1</button>
+                                    <button class="relative inline-flex items-center px-4 py-2 border border-secondary-300 bg-surface text-sm font-medium text-secondary-700 hover:bg-secondary-50">2</button>
+                                    <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-secondary-300 bg-surface text-sm font-medium text-secondary-500 hover:bg-secondary-50">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Activity Audit Trail -->
+            <div class="lg:col-span-1">
+                <div class="card">
+                    <h3 class="text-lg font-semibold text-text-primary mb-4">
+                        <i class="fas fa-history mr-2 text-accent"></i>
+                        Journal d'activité
+                    </h3>
+                    <div class="space-y-4" id="activityLog">
+                        <!-- Activity items will be populated by JavaScript -->
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-secondary-200">
+                        <button class="text-sm text-primary hover:text-primary-700 font-medium">
+                            Voir tout le journal
+                            <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create/Edit User Modal -->
+    <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-surface rounded-lg shadow-modal max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <!-- Modal Header -->
+                <div class="flex justify-between items-center mb-6">
+                    <h3 id="modalTitle" class="text-xl font-semibold text-text-primary">Créer un utilisateur</h3>
+                    <button onclick="closeUserModal()" class="text-secondary-500 hover:text-secondary-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- User Form -->
+                <form id="userForm" class="space-y-6">
+                    <input type="hidden" id="userId" name="userId" />
+                    
+                    <!-- Personal Information -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="firstName" class="block text-sm font-medium text-text-primary mb-2">
+                                Prénom <span class="text-error">*</span>
+                            </label>
+                            <input type="text" id="firstName" name="firstName" class="input-field" required />
+                            <div id="firstNameError" class="text-error text-xs mt-1 hidden"></div>
+                        </div>
+                        <div>
+                            <label for="lastName" class="block text-sm font-medium text-text-primary mb-2">
+                                Nom <span class="text-error">*</span>
+                            </label>
+                            <input type="text" id="lastName" name="lastName" class="input-field" required />
+                            <div id="lastNameError" class="text-error text-xs mt-1 hidden"></div>
+                        </div>
+                    </div>
+
+                    <!-- Account Information -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="username" class="block text-sm font-medium text-text-primary mb-2">
+                                Nom d'utilisateur <span class="text-error">*</span>
+                            </label>
+                            <input type="text" id="username" name="username" class="input-field" required />
+                            <div id="usernameError" class="text-error text-xs mt-1 hidden"></div>
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-text-primary mb-2">
+                                Email <span class="text-error">*</span>
+                            </label>
+                            <input type="email" id="email" name="email" class="input-field" required />
+                            <div id="emailError" class="text-error text-xs mt-1 hidden"></div>
+                        </div>
+                    </div>
+
+                    <!-- Role and Status -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="role" class="block text-sm font-medium text-text-primary mb-2">
+                                Rôle <span class="text-error">*</span>
+                            </label>
+                            <select id="role" name="role" class="input-field" required>
+                                <option value>Sélectionner un rôle</option>
+                                <option value="administrator">Administrateur</option>
+                                <option value="accountant">Comptable</option>
+                            </select>
+                            <div id="roleError" class="text-error text-xs mt-1 hidden"></div>
+                        </div>
+                        <div>
+                            <label for="status" class="block text-sm font-medium text-text-primary mb-2">
+                                Statut
+                            </label>
+                            <select id="status" name="status" class="input-field">
+                                <option value="active">Actif</option>
+                                <option value="inactive">Inactif</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Password Section -->
+                    <div id="passwordSection" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-text-primary mb-2">
+                                <span id="passwordLabel">Mot de passe</span> <span class="text-error">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="password" id="password" name="password" class="input-field pr-10" required />
+                                <button type="button" id="togglePasswordBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center text-secondary-500 hover:text-secondary-700">
+                                    <i class="fas fa-eye" id="passwordEyeIcon"></i>
+                                </button>
+                            </div>
+                            <div id="passwordError" class="text-error text-xs mt-1 hidden"></div>
+                            <div class="text-xs text-secondary-500 mt-1">
+                                Minimum 8 caractères, incluant majuscules, minuscules et chiffres
+                            </div>
+                        </div>
+                        <div>
+                            <label for="confirmPassword" class="block text-sm font-medium text-text-primary mb-2">
+                                Confirmer le mot de passe <span class="text-error">*</span>
+                            </label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="input-field" required />
+                            <div id="confirmPasswordError" class="text-error text-xs mt-1 hidden"></div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex justify-end space-x-3 pt-6 border-t border-secondary-200">
+                        <button type="button" onclick="closeUserModal()" class="btn-secondary">
+                            Annuler
+                        </button>
+                        <button type="submit" id="submitBtn" class="btn-primary">
+                            <span id="submitText">Créer l'utilisateur</span>
+                            <div id="submitSpinner" class="hidden ml-2">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-surface rounded-lg shadow-modal max-w-md w-full mx-4 p-6">
+            <div class="flex items-center mb-4">
+                <div class="flex-shrink-0">
+                    <i id="confirmIcon" class="fas fa-exclamation-triangle text-warning text-2xl"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 id="confirmTitle" class="text-lg font-semibold text-text-primary">Confirmer l'action</h3>
+                </div>
+            </div>
+            <div class="mb-6">
+                <p id="confirmMessage" class="text-secondary-600">Êtes-vous sûr de vouloir effectuer cette action ?</p>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button onclick="closeConfirmModal()" class="btn-secondary">Annuler</button>
+                <button id="confirmActionBtn" class="btn-primary">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock user data
+        let users = [
+            {
+                id: 1,
+                username: 'admin',
+                email: 'admin@art.cm',
+                firstName: 'Jean',
+                lastName: 'Administrateur',
+                role: 'administrator',
+                status: 'active',
+                lastLogin: '29/07/2025 17:30',
+                createdAt: '15/01/2025 09:00'
+            },
+            {
+                id: 2,
+                username: 'comptable',
+                email: 'comptable@art.cm',
+                firstName: 'Marie',
+                lastName: 'Comptable',
+                role: 'accountant',
+                status: 'active',
+                lastLogin: '29/07/2025 16:45',
+                createdAt: '20/01/2025 14:30'
+            },
+            {
+                id: 3,
+                username: 'pierre.martin',
+                email: 'pierre.martin@art.cm',
+                firstName: 'Pierre',
+                lastName: 'Martin',
+                role: 'accountant',
+                status: 'active',
+                lastLogin: '28/07/2025 11:20',
+                createdAt: '25/01/2025 10:15'
+            },
+            {
+                id: 4,
+                username: 'sophie.dubois',
+                email: 'sophie.dubois@art.cm',
+                firstName: 'Sophie',
+                lastName: 'Dubois',
+                role: 'administrator',
+                status: 'inactive',
+                lastLogin: '26/07/2025 15:10',
+                createdAt: '02/02/2025 08:45'
+            },
+            {
+                id: 5,
+                username: 'paul.bernard',
+                email: 'paul.bernard@art.cm',
+                firstName: 'Paul',
+                lastName: 'Bernard',
+                role: 'accountant',
+                status: 'active',
+                lastLogin: '29/07/2025 09:15',
+                createdAt: '10/02/2025 16:20'
+            }
+        ];
+
+        // Mock activity log data
+        const activityLog = [
+            {
+                action: 'Utilisateur créé',
+                user: 'Paul Bernard',
+                timestamp: '29/07/2025 14:30',
+                type: 'create'
+            },
+            {
+                action: 'Rôle modifié',
+                user: 'Sophie Dubois',
+                timestamp: '29/07/2025 11:15',
+                type: 'update'
+            },
+            {
+                action: 'Compte désactivé',
+                user: 'Marc Lefebvre',
+                timestamp: '28/07/2025 16:45',
+                type: 'deactivate'
+            },
+            {
+                action: 'Mot de passe réinitialisé',
+                user: 'Marie Comptable',
+                timestamp: '28/07/2025 10:20',
+                type: 'password'
+            },
+            {
+                action: 'Utilisateur supprimé',
+                user: 'Test User',
+                timestamp: '27/07/2025 13:30',
+                type: 'delete'
+            }
+        ];
+
+        let currentEditingUser = null;
+        let selectedUsers = new Set();
+        let sortColumn = '';
+        let sortDirection = 'asc';
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            checkUserAccess();
+            renderUsersTable();
+            renderActivityLog();
+            setupEventListeners();
+        });
+
+        // Check if user has administrator access
+        function checkUserAccess() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            if (!currentUser.role || currentUser.role !== 'administrator') {
+                alert('Accès refusé. Cette page est réservée aux administrateurs.');
+                window.location.href = 'dashboard_overview.html';
+                return;
+            }
+            
+            // Update user name in header
+            document.getElementById('currentUserName').textContent = currentUser.name || 'Administrateur ART';
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // User dropdown toggle
+            document.getElementById('userMenuButton').addEventListener('click', function() {
+                document.getElementById('userDropdown').classList.toggle('hidden');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#userMenuButton')) {
+                    document.getElementById('userDropdown').classList.add('hidden');
+                }
+            });
+
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', filterUsers);
+            document.getElementById('roleFilter').addEventListener('change', filterUsers);
+            document.getElementById('statusFilter').addEventListener('change', filterUsers);
+
+            // Select all checkbox
+            document.getElementById('selectAll').addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+                checkboxes.forEach(cb => {
+                    cb.checked = this.checked;
+                    if (this.checked) {
+                        selectedUsers.add(parseInt(cb.value));
+                    } else {
+                        selectedUsers.delete(parseInt(cb.value));
+                    }
+                });
+                updateBulkActionButtons();
+            });
+
+            // Bulk action buttons
+            document.getElementById('bulkActivateBtn').addEventListener('click', () => bulkAction('activate'));
+            document.getElementById('bulkDeactivateBtn').addEventListener('click', () => bulkAction('deactivate'));
+
+            // Create user button
+            document.getElementById('createUserBtn').addEventListener('click', openCreateUserModal);
+
+            // Password toggle
+            document.getElementById('togglePasswordBtn').addEventListener('click', togglePassword);
+
+            // Form submission
+            document.getElementById('userForm').addEventListener('submit', handleFormSubmit);
+        }
+
+        // Render users table
+        function renderUsersTable(usersToRender = users) {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+
+            usersToRender.forEach(user => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-secondary-50';
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <input type="checkbox" value="${user.id}" class="rounded border-secondary-300 text-primary focus:ring-primary-500" onchange="handleUserSelection(${user.id}, this.checked)">
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                                <div class="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
+                                    <span class="text-primary font-medium text-sm">${user.firstName.charAt(0)}${user.lastName.charAt(0)}</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-text-primary">${user.username}</div>
+                                <div class="text-sm text-secondary-500">${user.firstName} ${user.lastName}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-text-primary">${user.email}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="status-badge ${user.role === 'administrator' ? 'bg-primary-100 text-primary-800' : 'bg-accent-100 text-accent-800'}">
+                            <i class="fas ${user.role === 'administrator' ? 'fa-user-shield' : 'fa-calculator'} mr-1"></i>
+                            ${user.role === 'administrator' ? 'Administrateur' : 'Comptable'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-500">
+                        ${user.lastLogin}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="status-badge ${user.status === 'active' ? 'status-success' : 'status-error'}">
+                            <i class="fas ${user.status === 'active' ? 'fa-check-circle' : 'fa-times-circle'} mr-1"></i>
+                            ${user.status === 'active' ? 'Actif' : 'Inactif'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="editUser(${user.id})" class="text-primary hover:text-primary-700" title="Modifier">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="resetPassword(${user.id})" class="text-warning hover:text-warning-700" title="Réinitialiser le mot de passe">
+                                <i class="fas fa-key"></i>
+                            </button>
+                            <button onclick="deleteUser(${user.id})" class="text-error hover:text-error-700" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+
+            // Update total count
+            document.getElementById('totalUsers').textContent = usersToRender.length;
+        }
+
+        // Render activity log
+        function renderActivityLog() {
+            const logContainer = document.getElementById('activityLog');
+            logContainer.innerHTML = '';
+
+            activityLog.slice(0, 5).forEach(activity => {
+                const item = document.createElement('div');
+                item.className = 'flex items-start space-x-3 p-3 rounded-md hover:bg-secondary-50';
+                
+                const iconClass = {
+                    'create': 'fa-plus text-success',
+                    'update': 'fa-edit text-primary',
+                    'deactivate': 'fa-times text-warning',
+                    'password': 'fa-key text-accent',
+                    'delete': 'fa-trash text-error'
+                }[activity.type] || 'fa-info text-secondary-500';
+
+                item.innerHTML = `
+                    <div class="flex-shrink-0">
+                        <i class="fas ${iconClass}"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm text-text-primary font-medium">${activity.action}</p>
+                        <p class="text-xs text-secondary-500">${activity.user}</p>
+                        <p class="text-xs text-secondary-400">${activity.timestamp}</p>
+                    </div>
+                `;
+                
+                logContainer.appendChild(item);
+            });
+        }
+
+        // Filter users
+        function filterUsers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const roleFilter = document.getElementById('roleFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            const filteredUsers = users.filter(user => {
+                const matchesSearch = !searchTerm || 
+                    user.username.toLowerCase().includes(searchTerm) ||
+                    user.email.toLowerCase().includes(searchTerm) ||
+                    `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm) ||
+                    (user.role === 'administrator' ? 'administrateur' : 'comptable').includes(searchTerm);
+                
+                const matchesRole = !roleFilter || user.role === roleFilter;
+                const matchesStatus = !statusFilter || user.status === statusFilter;
+
+                return matchesSearch && matchesRole && matchesStatus;
+            });
+
+            renderUsersTable(filteredUsers);
+        }
+
+        // Sort table
+        function sortTable(column) {
+            if (sortColumn === column) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = column;
+                sortDirection = 'asc';
+            }
+
+            users.sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+
+                if (column === 'lastLogin') {
+                    aVal = new Date(aVal.split('/').reverse().join('-'));
+                    bVal = new Date(bVal.split('/').reverse().join('-'));
+                }
+
+                if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+                if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            renderUsersTable();
+        }
+
+        // Handle user selection
+        function handleUserSelection(userId, isSelected) {
+            if (isSelected) {
+                selectedUsers.add(userId);
+            } else {
+                selectedUsers.delete(userId);
+            }
+            updateBulkActionButtons();
+        }
+
+        // Update bulk action buttons
+        function updateBulkActionButtons() {
+            const hasSelection = selectedUsers.size > 0;
+            document.getElementById('bulkActivateBtn').disabled = !hasSelection;
+            document.getElementById('bulkDeactivateBtn').disabled = !hasSelection;
+        }
+
+        // Bulk actions
+        function bulkAction(action) {
+            const actionText = action === 'activate' ? 'activer' : 'désactiver';
+            showConfirmModal(
+                `Confirmer l'action groupée`,
+                `Êtes-vous sûr de vouloir ${actionText} ${selectedUsers.size} utilisateur(s) ?`,
+                () => {
+                    selectedUsers.forEach(userId => {
+                        const user = users.find(u => u.id === userId);
+                        if (user) {
+                            user.status = action === 'activate' ? 'active' : 'inactive';
+                        }
+                    });
+                    
+                    selectedUsers.clear();
+                    document.getElementById('selectAll').checked = false;
+                    renderUsersTable();
+                    updateBulkActionButtons();
+                    closeConfirmModal();
+                    
+                    // Add to activity log
+                    activityLog.unshift({
+                        action: `Action groupée: ${selectedUsers.size} utilisateur(s) ${action === 'activate' ? 'activé(s)' : 'désactivé(s)'}`,
+                        user: 'Administrateur',
+                        timestamp: new Date().toLocaleDateString('fr-FR') + ' ' + new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}),
+                        type: action
+                    });
+                    renderActivityLog();
+                }
+            );
+        }
+
+        // Open create user modal
+        function openCreateUserModal() {
+            currentEditingUser = null;
+            document.getElementById('modalTitle').textContent = 'Créer un utilisateur';
+            document.getElementById('submitText').textContent = 'Créer l\'utilisateur';
+            document.getElementById('passwordLabel').textContent = 'Mot de passe';
+            document.getElementById('userForm').reset();
+            document.getElementById('status').value = 'active';
+            document.getElementById('userModal').classList.remove('hidden');
+            document.getElementById('userModal').classList.add('flex');
+        }
+
+        // Edit user
+        function editUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (!user) return;
+
+            currentEditingUser = user;
+            document.getElementById('modalTitle').textContent = 'Modifier l\'utilisateur';
+            document.getElementById('submitText').textContent = 'Mettre à jour';
+            document.getElementById('passwordLabel').textContent = 'Nouveau mot de passe (optionnel)';
+            
+            // Populate form
+            document.getElementById('userId').value = user.id;
+            document.getElementById('firstName').value = user.firstName;
+            document.getElementById('lastName').value = user.lastName;
+            document.getElementById('username').value = user.username;
+            document.getElementById('email').value = user.email;
+            document.getElementById('role').value = user.role;
+            document.getElementById('status').value = user.status;
+            
+            // Make password optional for editing
+            document.getElementById('password').required = false;
+            document.getElementById('confirmPassword').required = false;
+            
+            document.getElementById('userModal').classList.remove('hidden');
+            document.getElementById('userModal').classList.add('flex');
+        }
+
+        // Delete user
+        function deleteUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (!user) return;
+
+            showConfirmModal(
+                'Supprimer l\'utilisateur',
+                `Êtes-vous sûr de vouloir supprimer l'utilisateur "${user.username}" ? Cette action est irréversible.`,
+                () => {
+                    users = users.filter(u => u.id !== userId);
+                    renderUsersTable();
+                    closeConfirmModal();
+                    
+                    // Add to activity log
+                    activityLog.unshift({
+                        action: 'Utilisateur supprimé',
+                        user: `${user.firstName} ${user.lastName}`,
+                        timestamp: new Date().toLocaleDateString('fr-FR') + ' ' + new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}),
+                        type: 'delete'
+                    });
+                    renderActivityLog();
+                },
+                'error'
+            );
+        }
+
+        // Reset password
+        function resetPassword(userId) {
+            const user = users.find(u => u.id === userId);
+            if (!user) return;
+
+            showConfirmModal(
+                'Réinitialiser le mot de passe',
+                `Réinitialiser le mot de passe pour "${user.username}" ? Un nouveau mot de passe temporaire sera généré.`,
+                () => {
+                    // Simulate password reset
+                    const tempPassword = 'Temp' + Math.random().toString(36).substr(2, 6);
+                    alert(`Nouveau mot de passe temporaire pour ${user.username}: ${tempPassword}`);
+                    closeConfirmModal();
+                    
+                    // Add to activity log
+                    activityLog.unshift({
+                        action: 'Mot de passe réinitialisé',
+                        user: `${user.firstName} ${user.lastName}`,
+                        timestamp: new Date().toLocaleDateString('fr-FR') + ' ' + new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}),
+                        type: 'password'
+                    });
+                    renderActivityLog();
+                },
+                'warning'
+            );
+        }
+
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const eyeIcon = document.getElementById('passwordEyeIcon');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                eyeIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordField.type = 'password';
+                eyeIcon.className = 'fas fa-eye';
+            }
+        }
+
+        // Handle form submission
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) return;
+
+            const formData = new FormData(e.target);
+            const userData = Object.fromEntries(formData.entries());
+
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            const submitSpinner = document.getElementById('submitSpinner');
+            
+            submitBtn.disabled = true;
+            submitSpinner.classList.remove('hidden');
+
+            // Simulate API call
+            setTimeout(() => {
+                if (currentEditingUser) {
+                    // Update existing user
+                    Object.assign(currentEditingUser, {
+                        firstName: userData.firstName,
+                        lastName: userData.lastName,
+                        username: userData.username,
+                        email: userData.email,
+                        role: userData.role,
+                        status: userData.status
+                    });
+                    
+                    // Add to activity log
+                    activityLog.unshift({
+                        action: 'Utilisateur modifié',
+                        user: `${userData.firstName} ${userData.lastName}`,
+                        timestamp: new Date().toLocaleDateString('fr-FR') + ' ' + new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}),
+                        type: 'update'
+                    });
+                } else {
+                    // Create new user
+                    const newUser = {
+                        id: Math.max(...users.map(u => u.id)) + 1,
+                        ...userData,
+                        lastLogin: 'Jamais connecté',
+                        createdAt: new Date().toLocaleDateString('fr-FR') + ' ' + new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})
+                    };
+                    users.push(newUser);
+                    
+                    // Add to activity log
+                    activityLog.unshift({
+                        action: 'Utilisateur créé',
+                        user: `${userData.firstName} ${userData.lastName}`,
+                        timestamp: new Date().toLocaleDateString('fr-FR') + ' ' + new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}),
+                        type: 'create'
+                    });
+                }
+
+                renderUsersTable();
+                renderActivityLog();
+                closeUserModal();
+                
+                // Reset button state
+                submitBtn.disabled = false;
+                submitSpinner.classList.add('hidden');
+            }, 1000);
+        }
+
+        // Validate form
+        function validateForm() {
+            let isValid = true;
+            const fields = ['firstName', 'lastName', 'username', 'email', 'role'];
+            
+            // Clear previous errors
+            fields.forEach(field => {
+                document.getElementById(field + 'Error').classList.add('hidden');
+            });
+            document.getElementById('passwordError').classList.add('hidden');
+            document.getElementById('confirmPasswordError').classList.add('hidden');
+
+            // Validate required fields
+            fields.forEach(field => {
+                const value = document.getElementById(field).value.trim();
+                if (!value) {
+                    document.getElementById(field + 'Error').textContent = 'Ce champ est obligatoire';
+                    document.getElementById(field + 'Error').classList.remove('hidden');
+                    isValid = false;
+                }
+            });
+
+            // Validate email format
+            const email = document.getElementById('email').value.trim();
+            if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                document.getElementById('emailError').textContent = 'Format d\'email invalide';
+                document.getElementById('emailError').classList.remove('hidden');
+                isValid = false;
+            }
+
+            // Validate password (only for new users or if password is provided)
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!currentEditingUser || password) {
+                if (password.length < 8) {
+                    document.getElementById('passwordError').textContent = 'Le mot de passe doit contenir au moins 8 caractères';
+                    document.getElementById('passwordError').classList.remove('hidden');
+                    isValid = false;
+                } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+                    document.getElementById('passwordError').textContent = 'Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre';
+                    document.getElementById('passwordError').classList.remove('hidden');
+                    isValid = false;
+                }
+
+                if (password !== confirmPassword) {
+                    document.getElementById('confirmPasswordError').textContent = 'Les mots de passe ne correspondent pas';
+                    document.getElementById('confirmPasswordError').classList.remove('hidden');
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+
+        // Close user modal
+        function closeUserModal() {
+            document.getElementById('userModal').classList.add('hidden');
+            document.getElementById('userModal').classList.remove('flex');
+            document.getElementById('userForm').reset();
+            currentEditingUser = null;
+            
+            // Reset password requirements
+            document.getElementById('password').required = true;
+            document.getElementById('confirmPassword').required = true;
+        }
+
+        // Show confirmation modal
+        function showConfirmModal(title, message, onConfirm, type = 'warning') {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            
+            const icon = document.getElementById('confirmIcon');
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            
+            if (type === 'error') {
+                icon.className = 'fas fa-exclamation-triangle text-error text-2xl';
+                confirmBtn.className = 'px-4 py-2 bg-error text-white rounded-md font-medium hover:bg-error-600 transition-colors';
+                confirmBtn.textContent = 'Supprimer';
+            } else {
+                icon.className = 'fas fa-exclamation-triangle text-warning text-2xl';
+                confirmBtn.className = 'btn-primary';
+                confirmBtn.textContent = 'Confirmer';
+            }
+            
+            document.getElementById('confirmActionBtn').onclick = onConfirm;
+            document.getElementById('confirmModal').classList.remove('hidden');
+            document.getElementById('confirmModal').classList.add('flex');
+        }
+
+        // Close confirmation modal
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            document.getElementById('confirmModal').classList.remove('flex');
+        }
+
+        // Close modals on outside click
+        document.getElementById('userModal').addEventListener('click', function(e) {
+            if (e.target === this) closeUserModal();
+        });
+
+        document.getElementById('confirmModal').addEventListener('click', function(e) {
+            if (e.target === this) closeConfirmModal();
+        });
+    </script>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>

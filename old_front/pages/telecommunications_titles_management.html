@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion des Titres - ART Telecom Titles Manager</title>
+    <link rel="stylesheet" href="../css/main.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+<script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fartteleco4172back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.6"></script>
+</head>
+<body class="bg-background min-h-screen">
+    <!-- Header with Dual Logos -->
+    <header class="bg-surface shadow-institutional border-b border-secondary-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Polytechnique Logo (Left) -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="../images/polytechnique-logo.jpg" alt="Polytechnique Cameroun" class="h-10 w-auto" />
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="dashboard_overview.html" class="text-secondary-600 hover:text-primary transition-colors">
+                        <i class="fas fa-tachometer-alt mr-2"></i>Tableau de Bord
+                    </a>
+                    <a href="telecommunications_titles_management.html" class="text-primary font-medium">
+                        <i class="fas fa-file-contract mr-2"></i>Titres
+                    </a>
+                    <a href="user_management_administration.html" class="text-secondary-600 hover:text-primary transition-colors">
+                        <i class="fas fa-users mr-2"></i>Utilisateurs
+                    </a>
+                    <a href="statistics_and_analytics_dashboard.html" class="text-secondary-600 hover:text-primary transition-colors">
+                        <i class="fas fa-chart-bar mr-2"></i>Statistiques
+                    </a>
+                </nav>
+
+                <!-- User Menu & ART Logo -->
+                <div class="flex items-center space-x-4">
+                    <!-- User Menu -->
+                    <div class="relative">
+                        <button id="userMenuButton" class="flex items-center text-secondary-600 hover:text-primary transition-colors">
+                            <i class="fas fa-user-circle text-xl mr-2"></i>
+                            <span id="currentUserName" class="hidden md:inline">Utilisateur</span>
+                            <i class="fas fa-chevron-down ml-1"></i>
+                        </button>
+                        <div id="userDropdown" class="absolute right-0 mt-2 w-48 bg-surface rounded-md shadow-elevated border border-secondary-200 hidden z-50">
+                            <div class="py-1">
+                                <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-user mr-2"></i>Profil
+                                </a>
+                                <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-cog mr-2"></i>Paramètres
+                                </a>
+                                <hr class="my-1 border-secondary-200" />
+                                <a href="login_authentication.html" class="block px-4 py-2 text-sm text-error hover:bg-error-50" onclick="logout()">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ART Logo (Right) -->
+                    <div class="flex-shrink-0">
+                        <img src="../images/art-logo.jpg" alt="ART Cameroun" class="h-10 w-auto" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <div id="mobileMenu" class="md:hidden bg-surface border-b border-secondary-200 hidden">
+        <div class="px-4 py-2 space-y-1">
+            <a href="dashboard_overview.html" class="block px-3 py-2 text-secondary-600 hover:text-primary hover:bg-secondary-50 rounded-md">
+                <i class="fas fa-tachometer-alt mr-2"></i>Tableau de Bord
+            </a>
+            <a href="telecommunications_titles_management.html" class="block px-3 py-2 text-primary bg-primary-50 rounded-md font-medium">
+                <i class="fas fa-file-contract mr-2"></i>Titres
+            </a>
+            <a href="user_management_administration.html" class="block px-3 py-2 text-secondary-600 hover:text-primary hover:bg-secondary-50 rounded-md">
+                <i class="fas fa-users mr-2"></i>Utilisateurs
+            </a>
+            <a href="statistics_and_analytics_dashboard.html" class="block px-3 py-2 text-secondary-600 hover:text-primary hover:bg-secondary-50 rounded-md">
+                <i class="fas fa-chart-bar mr-2"></i>Statistiques
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Breadcrumb -->
+        <nav class="flex mb-6" aria-label="Breadcrumb">
+            <ol class="flex items-center space-x-2 text-sm">
+                <li>
+                    <a href="dashboard_overview.html" class="text-secondary-500 hover:text-primary transition-colors">
+                        <i class="fas fa-home mr-1"></i>Tableau de Bord
+                    </a>
+                </li>
+                <li>
+                    <i class="fas fa-chevron-right text-secondary-400 mx-2"></i>
+                </li>
+                <li class="text-primary font-medium">
+                    <i class="fas fa-file-contract mr-1"></i>Titres
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+            <div>
+                <h1 class="text-2xl font-semibold text-text-primary mb-2">Gestion des Titres de Télécommunications</h1>
+                <p class="text-secondary-600">Gérez les licences et autorisations de télécommunications</p>
+            </div>
+            <div class="mt-4 sm:mt-0 flex space-x-3">
+                <button id="addTitleBtn" class="btn-primary flex items-center">
+                    <i class="fas fa-plus mr-2"></i>Ajouter Titre
+                </button>
+                <button id="exportBtn" class="btn-secondary flex items-center">
+                    <i class="fas fa-download mr-2"></i>Exporter
+                </button>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="card mb-6">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                <!-- Left Side - Search and Import -->
+                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+                    <!-- Search Bar -->
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-secondary-400"></i>
+                        </div>
+                        <input type="text" id="searchInput" class="input-field pl-10 w-full sm:w-80" placeholder="Rechercher par numéro, titulaire..." />
+                    </div>
+
+                    <!-- Excel Import -->
+                    <div class="relative">
+                        <input type="file" id="excelImport" accept=".xlsx,.xls" class="hidden" />
+                        <button onclick="document.getElementById('excelImport').click()" class="btn-secondary flex items-center">
+                            <i class="fas fa-file-excel mr-2 text-success"></i>Importer Excel
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Side - Filters Toggle -->
+                <div class="flex items-center space-x-3">
+                    <button id="filterToggle" class="btn-secondary flex items-center">
+                        <i class="fas fa-filter mr-2"></i>Filtres
+                        <i class="fas fa-chevron-down ml-2" id="filterChevron"></i>
+                    </button>
+                    <div class="text-sm text-secondary-600">
+                        <span id="totalCount">0</span> titre(s)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Filters Panel -->
+            <div id="filtersPanel" class="hidden mt-6 pt-6 border-t border-secondary-200">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Status Filter -->
+                    <div>
+                        <label class="block text-sm font-medium text-text-primary mb-2">Statut</label>
+                        <select id="statusFilter" class="input-field">
+                            <option value>Tous les statuts</option>
+                            <option value="actif">Actif</option>
+                            <option value="expire">Expiré</option>
+                            <option value="suspendu">Suspendu</option>
+                            <option value="en_attente">En Attente</option>
+                        </select>
+                    </div>
+
+                    <!-- Date Range From -->
+                    <div>
+                        <label class="block text-sm font-medium text-text-primary mb-2">Date de début</label>
+                        <input type="date" id="dateFromFilter" class="input-field" />
+                    </div>
+
+                    <!-- Date Range To -->
+                    <div>
+                        <label class="block text-sm font-medium text-text-primary mb-2">Date de fin</label>
+                        <input type="date" id="dateToFilter" class="input-field" />
+                    </div>
+
+<!-- Title Type Filter -->
+<div>
+    <label class="block text-sm font-medium text-text-primary mb-2">Type de titre</label>
+    <select id="typeFilter" class="input-field">
+        <option value>Tous les types</option>
+        <option value="licence_1ere_categorie">Licence 1ère Catégorie (3 ans)</option>
+        <option value="licence_2e_categorie">Licence 2ème Catégorie</option>
+        <option value="agrement_vendeur">Agrément Vendeur (3 ans)</option>
+        <option value="agrement_installateur">Agrément Installateur (3 ans)</option>
+        <option value="concession">Concession (10 ans)</option>
+        <option value="recepisse_declaration">Récépissé Déclaration Préalable</option>
+        <option value="aaf">Accord d'Assignation de Fréquence (AAF)</option>
+    </select>
+</div>
+                </div>
+
+                <!-- Filter Actions -->
+                <div class="flex justify-end space-x-3 mt-4">
+                    <button id="clearFilters" class="btn-secondary">
+                        <i class="fas fa-times mr-2"></i>Effacer
+                    </button>
+                    <button id="applyFilters" class="btn-primary">
+                        <i class="fas fa-check mr-2"></i>Appliquer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bulk Actions Bar (Hidden by default) -->
+        <div id="bulkActionsBar" class="hidden bg-accent-50 border border-accent-200 rounded-md p-4 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <span class="text-accent-800 font-medium">
+                        <span id="selectedCount">0</span> titre(s) sélectionné(s)
+                    </span>
+                </div>
+                <div class="flex space-x-3">
+                    <button id="bulkExport" class="btn-secondary text-sm">
+                        <i class="fas fa-download mr-2"></i>Exporter sélection
+                    </button>
+                    <button id="bulkDelete" class="bg-error text-white px-3 py-1 rounded-md text-sm hover:bg-error-600 transition-colors">
+                        <i class="fas fa-trash mr-2"></i>Supprimer sélection
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="card overflow-hidden">
+            <!-- Desktop Table -->
+            <div class="hidden lg:block overflow-x-auto">
+                <table class="min-w-full divide-y divide-secondary-200">
+                    <thead class="bg-secondary-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left">
+                                <input type="checkbox" id="selectAll" class="rounded border-secondary-300 text-primary focus:ring-primary-500" />
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider cursor-pointer hover:bg-secondary-100 transition-colors" onclick="sortTable('number')">
+                                <div class="flex items-center">
+                                    Numéro de Titre
+                                    <i class="fas fa-sort ml-2 text-secondary-400"></i>
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider cursor-pointer hover:bg-secondary-100 transition-colors" onclick="sortTable('date')">
+                                <div class="flex items-center">
+                                    Date d'Attribution
+                                    <i class="fas fa-sort ml-2 text-secondary-400"></i>
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider cursor-pointer hover:bg-secondary-100 transition-colors" onclick="sortTable('status')">
+                                <div class="flex items-center">
+                                    Statut
+                                    <i class="fas fa-sort ml-2 text-secondary-400"></i>
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider cursor-pointer hover:bg-secondary-100 transition-colors" onclick="sortTable('holder')">
+                                <div class="flex items-center">
+                                    Titulaire
+                                    <i class="fas fa-sort ml-2 text-secondary-400"></i>
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider cursor-pointer hover:bg-secondary-100 transition-colors" onclick="sortTable('expiration')">
+                                <div class="flex items-center">
+                                    Expiration
+                                    <i class="fas fa-sort ml-2 text-secondary-400"></i>
+                                </div>
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="titlesTableBody" class="bg-surface divide-y divide-secondary-200">
+                        <!-- Table rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile Cards -->
+            <div class="lg:hidden space-y-4" id="mobileCards">
+                <!-- Mobile cards will be populated by JavaScript -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden text-center py-12">
+                <div class="mx-auto h-24 w-24 bg-secondary-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-file-contract text-secondary-400 text-3xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-text-primary mb-2">Aucun titre trouvé</h3>
+                <p class="text-secondary-600 mb-6">Commencez par ajouter votre premier titre de télécommunications.</p>
+                <button onclick="openAddTitleModal()" class="btn-primary">
+                    <i class="fas fa-plus mr-2"></i>Ajouter un Titre
+                </button>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div id="paginationContainer" class="flex items-center justify-between mt-6">
+            <div class="text-sm text-secondary-600">
+                Affichage de <span id="showingFrom">1</span> à <span id="showingTo">10</span> sur <span id="totalItems">0</span> résultats
+            </div>
+            <div class="flex space-x-2" id="paginationButtons">
+                <!-- Pagination buttons will be populated by JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Title Modal -->
+    <div id="titleModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-surface rounded-lg shadow-modal max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <!-- Modal Header -->
+                <div class="flex justify-between items-center mb-6">
+                    <h3 id="modalTitle" class="text-lg font-semibold text-text-primary">Ajouter un Titre</h3>
+                    <button onclick="closeTitleModal()" class="text-secondary-500 hover:text-secondary-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Form -->
+                <form id="titleForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Title Number -->
+                        <div>
+                            <label for="titleNumber" class="block text-sm font-medium text-text-primary mb-2">
+                                Numéro de Titre *
+                            </label>
+                            <input type="text" id="titleNumber" name="titleNumber" class="input-field" required />
+                            <div id="titleNumberError" class="text-error text-xs mt-1 hidden"></div>
+                        </div>
+
+                        <!-- Title Type -->
+                        <div>
+                            <label for="titleType" class="block text-sm font-medium text-text-primary mb-2">
+                                Type de Titre *
+                            </label>
+                            <select id="titleType" name="titleType" class="input-field" required>
+                                <option value>Sélectionner un type</option>
+                                <option value="licence_gsm">Licence GSM</option>
+                                <option value="licence_internet">Licence Internet</option>
+                                <option value="autorisation_vsat">Autorisation VSAT</option>
+                                <option value="licence_radio">Licence Radio</option>
+                            </select>
+                            <div id="titleTypeError" class="text-error text-xs mt-1 hidden"></div>
+                        </div>
+
+                        <!-- Holder Name -->
+                        <div class="md:col-span-2">
+                            <label for="holderName" class="block text-sm font-medium text-text-primary mb-2">
+                                Nom du Titulaire *
+                            </label>
+                            <input type="text" id="holderName" name="holderName" class="input-field" required />
+                            <div id="holderNameError" class="text-error text-xs mt-1 hidden"></div>
+                        </div>
+
+                        <!-- Attribution Date -->
+                        <div>
+                            <label for="attributionDate" class="block text-sm font-medium text-text-primary mb-2">
+                                Date d'Attribution *
+                            </label>
+                            <input type="date" id="attributionDate" name="attributionDate" class="input-field" required />
+                            <div id="attributionDateError" class="text-error text-xs mt-1 hidden"></div>
+                        </div>
+
+                        <!-- Expiration Date -->
+                        <div>
+                            <label for="expirationDate" class="block text-sm font-medium text-text-primary mb-2">
+                                Date d'Expiration *
+                            </label>
+                            <input type="date" id="expirationDate" name="expirationDate" class="input-field" required />
+                            <div id="expirationDateError" class="text-error text-xs mt-1 hidden"></div>
+                        </div>
+
+                        <!-- Status -->
+                        <div>
+                            <label for="titleStatus" class="block text-sm font-medium text-text-primary mb-2">
+                                Statut *
+                            </label>
+                            <select id="titleStatus" name="titleStatus" class="input-field" required>
+                                <option value>Sélectionner un statut</option>
+                                <option value="actif">Actif</option>
+                                <option value="expire">Expiré</option>
+                                <option value="suspendu">Suspendu</option>
+                                <option value="en_attente">En Attente</option>
+                            </select>
+                            <div id="titleStatusError" class="text-error text-xs mt-1 hidden"></div>
+                        </div>
+
+                        <!-- Amount -->
+                        <div>
+                            <label for="amount" class="block text-sm font-medium text-text-primary mb-2">
+                                Montant (XAF)
+                            </label>
+                            <input type="number" id="amount" name="amount" class="input-field" min="0" step="1000" />
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-text-primary mb-2">
+                            Description
+                        </label>
+                        <textarea id="description" name="description" rows="3" class="input-field" placeholder="Description optionnelle du titre..."></textarea>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex justify-end space-x-3 pt-6 border-t border-secondary-200">
+                        <button type="button" onclick="closeTitleModal()" class="btn-secondary">
+                            Annuler
+                        </button>
+                        <button type="submit" id="submitBtn" class="btn-primary">
+                            <span id="submitText">Enregistrer</span>
+                            <div id="submitSpinner" class="hidden ml-2">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-surface rounded-lg shadow-modal max-w-md w-full mx-4 p-6">
+            <div class="flex items-center mb-4">
+                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-error-100">
+                    <i class="fas fa-exclamation-triangle text-error text-xl"></i>
+                </div>
+            </div>
+            <div class="text-center">
+                <h3 class="text-lg font-medium text-text-primary mb-2">Confirmer la suppression</h3>
+                <p class="text-secondary-600 mb-6">
+                    Êtes-vous sûr de vouloir supprimer ce titre ? Cette action est irréversible.
+                </p>
+                <div class="flex space-x-3">
+                    <button onclick="closeDeleteModal()" class="btn-secondary flex-1">
+                        Annuler
+                    </button>
+                    <button onclick="confirmDelete()" class="bg-error text-white px-4 py-2 rounded-md font-medium hover:bg-error-600 transition-colors flex-1">
+                        Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data for telecommunications titles with updated types
+        let titlesData = [
+            {
+                id: 1,
+                number: 'ART-2024-001',
+                type: 'licence_1ere_categorie',
+                holder: 'Orange Cameroun SA',
+                attributionDate: '2024-01-15',
+                expirationDate: '2027-01-15',
+                status: 'actif',
+                amount: 50000000,
+                description: 'Licence 1ère catégorie pour services de télécommunications - durée 3 ans'
+            },
+            {
+                id: 2,
+                number: 'ART-2024-002',
+                type: 'licence_2e_categorie',
+                holder: 'Camtel',
+                attributionDate: '2024-02-20',
+                expirationDate: '2027-02-20',
+                status: 'actif',
+                amount: 25000000,
+                description: 'Licence 2ème catégorie pour services Internet'
+            },
+            {
+                id: 3,
+                number: 'ART-2023-045',
+                type: 'agrement_vendeur',
+                holder: 'Société Électronique XYZ',
+                attributionDate: '2023-06-10',
+                expirationDate: '2026-06-10',
+                status: 'expire',
+                amount: 5000000,
+                description: 'Agrément vendeur pour équipements de télécommunications - durée 3 ans'
+            },
+            {
+                id: 4,
+                number: 'ART-2024-003',
+                type: 'agrement_installateur',
+                holder: 'TechInstall Plus',
+                attributionDate: '2024-03-01',
+                expirationDate: '2027-03-01',
+                status: 'suspendu',
+                amount: 3000000,
+                description: 'Agrément installateur pour équipements télécoms - durée 3 ans'
+            },
+            {
+                id: 5,
+                number: 'ART-2024-004',
+                type: 'concession',
+                holder: 'MTN Cameroon',
+                attributionDate: '2024-01-30',
+                expirationDate: '2034-01-30',
+                status: 'actif',
+                amount: 100000000,
+                description: 'Concession de service public de télécommunications - durée 10 ans'
+            },
+            {
+                id: 6,
+                number: 'ART-2024-005',
+                type: 'recepisse_declaration',
+                holder: 'StartUp Telecom',
+                attributionDate: '2024-04-15',
+                expirationDate: '2025-04-15',
+                status: 'actif',
+                amount: 500000,
+                description: 'Récépissé de déclaration au préalable pour services spécialisés'
+            },
+            // --- AJOUT DE 50 TITRES FICTIFS DONT DES AAF ---
+            ...Array.from({length: 50}, (_, i) => {
+                const operators = [
+                    'Afrikanet Online',
+                    'Africa Data Center', 
+                    'Innovative Technologie',
+                    'ZTE CAMEROUN',
+                    'Sated SARL',
+                    'Huawei Technologies Camtoco',
+                    'GAS Engineering SARL',
+                    'JMDS Track',
+                    'Matrix Telecoms'
+                ];
+                const operator = operators[i % operators.length];
+                
+                return {
+                    id: 7 + i,
+                    number: `ART-2024-${(6 + i).toString().padStart(3, '0')}`,
+                    type: i % 7 === 0 ? 'aaf' : ['licence_1ere_categorie','licence_2e_categorie','agrement_vendeur','agrement_installateur','concession','recepisse_declaration'][i % 6],
+                    holder: operator,
+                    attributionDate: `2023-${(1 + (i%12)).toString().padStart(2, '0')}-15`,
+                    expirationDate: `202${4 + (i%3)}-${(1 + (i%12)).toString().padStart(2, '0')}-15`,
+                    status: ['actif','expire','suspendu','en_attente'][i%4],
+                    amount: 1000000 + i*10000,
+                    description: i % 7 === 0 ? 'Accord d\'Assignation de Fréquence (AAF) fictif' : 'Titre fictif pour test'
+                };
+            })
+        ];
+
+        let filteredData = [...titlesData];
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let sortColumn = '';
+        let sortDirection = 'asc';
+        let selectedItems = new Set();
+        let editingId = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserInfo();
+            setupEventListeners();
+            renderTable();
+            updatePagination();
+        });
+
+        // Load user information
+        function loadUserInfo() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            if (currentUser.name) {
+                document.getElementById('currentUserName').textContent = currentUser.name;
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // User menu toggle
+            document.getElementById('userMenuButton').addEventListener('click', function() {
+                const dropdown = document.getElementById('userDropdown');
+                dropdown.classList.toggle('hidden');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#userMenuButton')) {
+                    document.getElementById('userDropdown').classList.add('hidden');
+                }
+            });
+
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function() {
+                applyFilters();
+            });
+
+            // Filter toggle
+            document.getElementById('filterToggle').addEventListener('click', function() {
+                const panel = document.getElementById('filtersPanel');
+                const chevron = document.getElementById('filterChevron');
+                
+                panel.classList.toggle('hidden');
+                chevron.classList.toggle('fa-chevron-down');
+                chevron.classList.toggle('fa-chevron-up');
+            });
+
+            // Filter actions
+            document.getElementById('applyFilters').addEventListener('click', applyFilters);
+            document.getElementById('clearFilters').addEventListener('click', clearFilters);
+
+            // Select all checkbox
+            document.getElementById('selectAll').addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('.item-checkbox');
+                checkboxes.forEach(cb => {
+                    cb.checked = this.checked;
+                    if (this.checked) {
+                        selectedItems.add(parseInt(cb.value));
+                    } else {
+                        selectedItems.delete(parseInt(cb.value));
+                    }
+                });
+                updateBulkActions();
+            });
+
+            // Add title button
+            document.getElementById('addTitleBtn').addEventListener('click', openAddTitleModal);
+
+            // Excel import
+            document.getElementById('excelImport').addEventListener('change', handleExcelImport);
+
+            // Export button
+            document.getElementById('exportBtn').addEventListener('click', exportData);
+
+            // Title form submission
+            document.getElementById('titleForm').addEventListener('submit', handleTitleSubmit);
+        }
+
+        // Render table
+        function renderTable() {
+            const tbody = document.getElementById('titlesTableBody');
+            const mobileCards = document.getElementById('mobileCards');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = '';
+                mobileCards.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                document.getElementById('totalCount').textContent = '0';
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageData = filteredData.slice(startIndex, endIndex);
+
+            // Desktop table
+            tbody.innerHTML = pageData.map(title => {
+                const isExpiringSoon = isExpiringWithin30Days(title.expirationDate);
+                const rowClass = isExpiringSoon ? 'bg-warning-50' : '';
+                
+                return `
+                    <tr class="${rowClass} hover:bg-secondary-50 transition-colors">
+                        <td class="px-6 py-4">
+                            <input type="checkbox" class="item-checkbox rounded border-secondary-300 text-primary focus:ring-primary-500" 
+                                   value="${title.id}" onchange="handleItemSelection(${title.id})">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-text-primary">${title.number}</div>
+                            <div class="text-xs text-secondary-500">${getTypeLabel(title.type)}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-600">
+                            ${formatDate(title.attributionDate)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            ${getStatusBadge(title.status)}
+                            ${isExpiringSoon ? '<div class="text-xs text-warning-600 mt-1"><i class="fas fa-exclamation-triangle mr-1"></i>Expire bientôt</div>' : ''}
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-medium text-text-primary">${title.holder}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-600">
+                            ${formatDate(title.expirationDate)}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button onclick="viewTitle(${title.id})" class="text-accent hover:text-accent-600 transition-colors" title="Voir">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button onclick="editTitle(${title.id})" class="text-primary hover:text-primary-700 transition-colors" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteTitle(${title.id})" class="text-error hover:text-error-600 transition-colors" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Mobile cards
+            mobileCards.innerHTML = pageData.map(title => {
+                const isExpiringSoon = isExpiringWithin30Days(title.expirationDate);
+                const cardClass = isExpiringSoon ? 'border-warning-300 bg-warning-50' : 'border-secondary-200';
+                
+                return `
+                    <div class="card ${cardClass}">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center">
+                                <input type="checkbox" class="item-checkbox rounded border-secondary-300 text-primary focus:ring-primary-500 mr-3" 
+                                       value="${title.id}" onchange="handleItemSelection(${title.id})">
+                                <div>
+                                    <div class="font-medium text-text-primary">${title.number}</div>
+                                    <div class="text-xs text-secondary-500">${getTypeLabel(title.type)}</div>
+                                </div>
+                            </div>
+                            ${getStatusBadge(title.status)}
+                        </div>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-secondary-600">Titulaire:</span>
+                                <span class="font-medium">${title.holder}</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-secondary-600">Attribution:</span>
+                                <span>${formatDate(title.attributionDate)}</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-secondary-600">Expiration:</span>
+                                <span>${formatDate(title.expirationDate)}</span>
+                            </div>
+                        </div>
+
+                        ${isExpiringSoon ? '<div class="text-xs text-warning-600 mb-3"><i class="fas fa-exclamation-triangle mr-1"></i>Expire dans moins de 30 jours</div>' : ''}
+
+                        <div class="flex justify-end space-x-3">
+                            <button onclick="viewTitle(${title.id})" class="text-accent hover:text-accent-600 transition-colors">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="editTitle(${title.id})" class="text-primary hover:text-primary-700 transition-colors">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteTitle(${title.id})" class="text-error hover:text-error-600 transition-colors">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('totalCount').textContent = filteredData.length;
+        }
+
+        // Helper functions
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-FR');
+        }
+
+        function getTypeLabel(type) {
+            const types = {
+                'licence_1ere_categorie': 'Licence 1ère Catégorie (3 ans)',
+                'licence_2e_categorie': 'Licence 2ème Catégorie',
+                'agrement_vendeur': 'Agrément Vendeur (3 ans)',
+                'agrement_installateur': 'Agrément Installateur (3 ans)',
+                'concession': 'Concession (10 ans)',
+                'recepisse_declaration': 'Récépissé Déclaration Préalable',
+                'aaf': "Accord d'Assignation de Fréquence (AAF)"
+            };
+            return types[type] || type;
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                'actif': '<span class="status-badge status-success"><i class="fas fa-check-circle mr-1"></i>Actif</span>',
+                'expire': '<span class="status-badge status-error"><i class="fas fa-times-circle mr-1"></i>Expiré</span>',
+                'suspendu': '<span class="status-badge status-warning"><i class="fas fa-pause-circle mr-1"></i>Suspendu</span>',
+                'en_attente': '<span class="status-badge bg-secondary-100 text-secondary-800"><i class="fas fa-clock mr-1"></i>En Attente</span>'
+            };
+            return badges[status] || status;
+        }
+
+        function isExpiringWithin30Days(expirationDate) {
+            const expDate = new Date(expirationDate);
+            const today = new Date();
+            const diffTime = expDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays <= 30 && diffDays >= 0;
+        }
+
+        // Filter functions
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const dateFromFilter = document.getElementById('dateFromFilter').value;
+            const dateToFilter = document.getElementById('dateToFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+
+            filteredData = titlesData.filter(title => {
+                const matchesSearch = !searchTerm || 
+                    title.number.toLowerCase().includes(searchTerm) ||
+                    title.holder.toLowerCase().includes(searchTerm);
+                
+                const matchesStatus = !statusFilter || title.status === statusFilter;
+                const matchesType = !typeFilter || title.type === typeFilter;
+                
+                const matchesDateFrom = !dateFromFilter || new Date(title.attributionDate) >= new Date(dateFromFilter);
+                const matchesDateTo = !dateToFilter || new Date(title.attributionDate) <= new Date(dateToFilter);
+
+                return matchesSearch && matchesStatus && matchesType && matchesDateFrom && matchesDateTo;
+            });
+
+            currentPage = 1;
+            renderTable();
+            updatePagination();
+        }
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('dateFromFilter').value = '';
+            document.getElementById('dateToFilter').value = '';
+            document.getElementById('typeFilter').value = '';
+            
+            filteredData = [...titlesData];
+            currentPage = 1;
+            renderTable();
+            updatePagination();
+        }
+
+        // Sort function
+        function sortTable(column) {
+            if (sortColumn === column) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = column;
+                sortDirection = 'asc';
+            }
+
+            filteredData.sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+
+                if (column === 'date' || column === 'expiration') {
+                    aVal = new Date(aVal);
+                    bVal = new Date(bVal);
+                }
+
+                if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+                if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            renderTable();
+        }
+
+        // Selection functions
+        function handleItemSelection(id) {
+            const checkbox = document.querySelector(`input[value="${id}"]`);
+            if (checkbox.checked) {
+                selectedItems.add(id);
+            } else {
+                selectedItems.delete(id);
+            }
+            updateBulkActions();
+        }
+
+        function updateBulkActions() {
+            const bulkBar = document.getElementById('bulkActionsBar');
+            const selectedCount = document.getElementById('selectedCount');
+            
+            if (selectedItems.size > 0) {
+                bulkBar.classList.remove('hidden');
+                selectedCount.textContent = selectedItems.size;
+            } else {
+                bulkBar.classList.add('hidden');
+            }
+        }
+
+        // Pagination
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            const startItem = (currentPage - 1) * itemsPerPage + 1;
+            const endItem = Math.min(currentPage * itemsPerPage, filteredData.length);
+
+            document.getElementById('showingFrom').textContent = filteredData.length > 0 ? startItem : 0;
+            document.getElementById('showingTo').textContent = endItem;
+            document.getElementById('totalItems').textContent = filteredData.length;
+
+            const paginationButtons = document.getElementById('paginationButtons');
+            let buttonsHTML = '';
+
+            // Previous button
+            if (currentPage > 1) {
+                buttonsHTML += `<button onclick="changePage(${currentPage - 1})" class="px-3 py-2 text-sm border border-secondary-300 rounded-md hover:bg-secondary-50 transition-colors">
+                    <i class="fas fa-chevron-left"></i>
+                </button>`;
+            }
+
+            // Page numbers
+            for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+                const isActive = i === currentPage;
+                buttonsHTML += `<button onclick="changePage(${i})" class="px-3 py-2 text-sm border ${isActive ? 'bg-primary text-white border-primary' : 'border-secondary-300 hover:bg-secondary-50'} rounded-md transition-colors">
+                    ${i}
+                </button>`;
+            }
+
+            // Next button
+            if (currentPage < totalPages) {
+                buttonsHTML += `<button onclick="changePage(${currentPage + 1})" class="px-3 py-2 text-sm border border-secondary-300 rounded-md hover:bg-secondary-50 transition-colors">
+                    <i class="fas fa-chevron-right"></i>
+                </button>`;
+            }
+
+            paginationButtons.innerHTML = buttonsHTML;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderTable();
+            updatePagination();
+        }
+
+        // Modal functions
+        function openAddTitleModal() {
+            editingId = null;
+            document.getElementById('modalTitle').textContent = 'Ajouter un Titre';
+            document.getElementById('submitText').textContent = 'Enregistrer';
+            document.getElementById('titleForm').reset();
+            clearFormErrors();
+            
+            // Update title type options with new types
+            const titleTypeSelect = document.getElementById('titleType');
+            titleTypeSelect.innerHTML = `
+                <option value>Sélectionner un type</option>
+                <option value="licence_1ere_categorie">Licence 1ère Catégorie (3 ans)</option>
+                <option value="licence_2e_categorie">Licence 2ème Catégorie</option>
+                <option value="agrement_vendeur">Agrément Vendeur (3 ans)</option>
+                <option value="agrement_installateur">Agrément Installateur (3 ans)</option>
+                <option value="concession">Concession (10 ans)</option>
+                <option value="recepisse_declaration">Récépissé Déclaration Préalable</option>
+                <option value="aaf">Accord d'Assignation de Fréquence (AAF)</option>
+            `;
+            
+            document.getElementById('titleModal').classList.remove('hidden');
+            document.getElementById('titleModal').classList.add('flex');
+        }
+
+        function editTitle(id) {
+            const title = titlesData.find(t => t.id === id);
+            if (!title) return;
+
+            editingId = id;
+            document.getElementById('modalTitle').textContent = 'Modifier le Titre';
+            document.getElementById('submitText').textContent = 'Mettre à jour';
+            
+            // Update title type options with new types
+            const titleTypeSelect = document.getElementById('titleType');
+            titleTypeSelect.innerHTML = `
+                <option value>Sélectionner un type</option>
+                <option value="licence_1ere_categorie">Licence 1ère Catégorie (3 ans)</option>
+                <option value="licence_2e_categorie">Licence 2ème Catégorie</option>
+                <option value="agrement_vendeur">Agrément Vendeur (3 ans)</option>
+                <option value="agrement_installateur">Agrément Installateur (3 ans)</option>
+                <option value="concession">Concession (10 ans)</option>
+                <option value="recepisse_declaration">Récépissé Déclaration Préalable</option>
+                <option value="aaf">Accord d'Assignation de Fréquence (AAF)</option>
+            `;
+            
+            // Populate form
+            document.getElementById('titleNumber').value = title.number;
+            document.getElementById('titleType').value = title.type;
+            document.getElementById('holderName').value = title.holder;
+            document.getElementById('attributionDate').value = title.attributionDate;
+            document.getElementById('expirationDate').value = title.expirationDate;
+            document.getElementById('titleStatus').value = title.status;
+            document.getElementById('amount').value = title.amount || '';
+            document.getElementById('description').value = title.description || '';
+
+            clearFormErrors();
+            document.getElementById('titleModal').classList.remove('hidden');
+            document.getElementById('titleModal').classList.add('flex');
+        }
+
+        function viewTitle(id) {
+            window.location.href = `title_creation_and_edit_form.html?id=${id}&mode=view`;
+        }
+
+        function closeTitleModal() {
+            document.getElementById('titleModal').classList.add('hidden');
+            document.getElementById('titleModal').classList.remove('flex');
+            document.getElementById('titleForm').reset();
+            clearFormErrors();
+            editingId = null;
+        }
+
+        function handleTitleSubmit(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                return;
+            }
+
+            const formData = new FormData(e.target);
+            
+            // Calculate expiration date based on title type
+            const titleType = formData.get('titleType');
+            const attributionDate = new Date(formData.get('attributionDate'));
+            let expirationDate = new Date(attributionDate);
+            
+            // Set duration based on title type
+            switch(titleType) {
+                case 'licence_1ere_categorie':
+                case 'agrement_vendeur':
+                case 'agrement_installateur':
+                    expirationDate.setFullYear(expirationDate.getFullYear() + 3);
+                    break;
+                case 'concession':
+                    expirationDate.setFullYear(expirationDate.getFullYear() + 10);
+                    break;
+                case 'licence_2e_categorie':
+                case 'recepisse_declaration':
+                case 'aaf': // Added AAF case
+                    expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+                    break;
+                default:
+                    expirationDate.setFullYear(expirationDate.getFullYear() + 1); // Default to 1 year
+                    break;
+            }
+            
+            const titleData = {
+                number: formData.get('titleNumber'),
+                type: titleType,
+                holder: formData.get('holderName'),
+                attributionDate: formData.get('attributionDate'),
+                expirationDate: expirationDate.toISOString().split('T')[0],
+                status: formData.get('titleStatus'),
+                amount: formData.get('amount') ? parseInt(formData.get('amount')) : null,
+                description: formData.get('description')
+            };
+
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            const submitSpinner = document.getElementById('submitSpinner');
+            
+            submitBtn.disabled = true;
+            submitSpinner.classList.remove('hidden');
+
+            // Simulate API call
+            setTimeout(() => {
+                if (editingId) {
+                    // Update existing title
+                    const index = titlesData.findIndex(t => t.id === editingId);
+                    if (index !== -1) {
+                        titlesData[index] = { ...titlesData[index], ...titleData };
+                    }
+                } else {
+                    // Add new title
+                    const newTitle = {
+                        id: Math.max(...titlesData.map(t => t.id)) + 1,
+                        ...titleData
+                    };
+                    titlesData.push(newTitle);
+                }
+
+                applyFilters();
+                closeTitleModal();
+                
+                // Reset button state
+                submitBtn.disabled = false;
+                submitSpinner.classList.add('hidden');
+            }, 1000);
+        }
+
+        function validateForm() {
+            let isValid = true;
+            clearFormErrors();
+
+            const requiredFields = [
+                { id: 'titleNumber', message: 'Le numéro de titre est obligatoire' },
+                { id: 'titleType', message: 'Le type de titre est obligatoire' },
+                { id: 'holderName', message: 'Le nom du titulaire est obligatoire' },
+                { id: 'attributionDate', message: 'La date d\'attribution est obligatoire' },
+                { id: 'titleStatus', message: 'Le statut est obligatoire' }
+            ];
+
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field.id);
+                const errorElement = document.getElementById(field.id + 'Error');
+                
+                if (!element.value.trim()) {
+                    errorElement.textContent = field.message;
+                    errorElement.classList.remove('hidden');
+                    isValid = false;
+                }
+            });
+
+            return isValid;
+        }
+
+        function clearFormErrors() {
+            const errorElements = document.querySelectorAll('[id$="Error"]');
+            errorElements.forEach(element => {
+                element.classList.add('hidden');
+                element.textContent = '';
+            });
+        }
+
+        // Delete functions
+        function deleteTitle(id) {
+            editingId = id;
+            document.getElementById('deleteModal').classList.remove('hidden');
+            document.getElementById('deleteModal').classList.add('flex');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+            document.getElementById('deleteModal').classList.remove('flex');
+            editingId = null;
+        }
+
+        function confirmDelete() {
+            if (editingId) {
+                titlesData = titlesData.filter(t => t.id !== editingId);
+                selectedItems.delete(editingId);
+                applyFilters();
+                updateBulkActions();
+                closeDeleteModal();
+            }
+        }
+
+        // Export functions
+        function exportData() {
+            const dataToExport = selectedItems.size > 0 
+                ? titlesData.filter(t => selectedItems.has(t.id))
+                : filteredData;
+
+            const csvContent = convertToCSV(dataToExport);
+            downloadCSV(csvContent, 'titres_telecommunications.csv');
+        }
+
+        function convertToCSV(data) {
+            const headers = ['Numéro', 'Type', 'Titulaire', 'Date Attribution', 'Date Expiration', 'Statut', 'Montant'];
+            const rows = data.map(title => [
+                title.number,
+                getTypeLabel(title.type),
+                title.holder,
+                formatDate(title.attributionDate),
+                formatDate(title.expirationDate),
+                title.status,
+                title.amount || ''
+            ]);
+
+            return [headers, ...rows].map(row => row.join(',')).join('\n');
+        }
+
+        function downloadCSV(content, filename) {
+            const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Excel import function
+        function handleExcelImport(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // For HTML projects, Excel import/export is limited
+            alert('Import Excel: Cette fonctionnalité nécessite un backend pour traiter les fichiers Excel. Dans cette version HTML, seul l\'export CSV est disponible.');
+            e.target.value = '';
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'login_authentication.html';
+        }
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        }
+</script>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>

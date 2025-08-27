@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tableau de Bord - ART Telecom Titles Manager</title>
+    <link rel="stylesheet" href="../css/main.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+<script type="module" src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fartteleco4172back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.6"></script>
+</head>
+<body class="bg-background min-h-screen">
+    <!-- Header with Dual Logos and Navigation -->
+    <header class="bg-surface shadow-institutional border-b border-secondary-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Polytechnique Logo (Left) -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="../images/polytechnique-logo.jpg" alt="Polytechnique Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="dashboard_overview.html" class="text-primary font-medium border-b-2 border-primary pb-4 px-1">
+                        <i class="fas fa-tachometer-alt mr-2"></i>
+                        Tableau de Bord
+                    </a>
+                    <a href="telecommunications_titles_management.html" class="text-secondary-600 hover:text-primary transition-colors pb-4 px-1">
+                        <i class="fas fa-certificate mr-2"></i>
+                        Titres
+                    </a>
+                    <a href="title_tracking_staff.html" class="text-secondary-600 hover:text-primary transition-colors pb-4 px-1">
+                        <i class="fas fa-clipboard-list mr-2"></i>
+                        Suivi Demandes
+                    </a>
+                    <a href="user_management_administration.html" class="text-secondary-600 hover:text-primary transition-colors pb-4 px-1" id="userManagementLink">
+                        <i class="fas fa-users mr-2"></i>
+                        Utilisateurs
+                    </a>
+                    <a href="statistics_and_analytics_dashboard.html" class="text-secondary-600 hover:text-primary transition-colors pb-4 px-1">
+                        <i class="fas fa-chart-bar mr-2"></i>
+                        Statistiques
+                    </a>
+                    <a href="impact_dashboard.html" class="text-secondary-600 hover:text-primary transition-colors pb-4 px-1">
+                        <i class="fas fa-chart-line mr-2"></i>
+                        Impact Télécoms
+                    </a>
+                </nav>
+
+                <!-- User Profile & ART Logo -->
+                <div class="flex items-center space-x-4">
+                    <!-- User Profile Dropdown -->
+                    <div class="relative">
+                        <button id="userMenuButton" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                            <div class="h-8 w-8 bg-primary-100 rounded-full flex items-center justify-center mr-2">
+                                <i class="fas fa-user text-primary text-sm"></i>
+                            </div>
+                            <span class="text-secondary-700 font-medium" id="userName">Utilisateur</span>
+                            <i class="fas fa-chevron-down ml-2 text-secondary-500"></i>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-surface rounded-md shadow-elevated border border-secondary-200 z-50">
+                            <div class="py-1">
+                                <div class="px-4 py-2 text-sm text-secondary-500 border-b border-secondary-200">
+                                    <div class="font-medium text-text-primary" id="userRole">Rôle</div>
+                                    <div class="text-xs" id="userEmail">email@art.cm</div>
+                                </div>
+                                <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-user-cog mr-2"></i>
+                                    Profil
+                                </a>
+                                <a href="javascript:void(0)" class="block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-50">
+                                    <i class="fas fa-cog mr-2"></i>
+                                    Paramètres
+                                </a>
+                                <div class="border-t border-secondary-200"></div>
+                                <a href="javascript:void(0)" onclick="logout()" class="block px-4 py-2 text-sm text-error hover:bg-error-50">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>
+                                    Déconnexion
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ART Logo (Right) -->
+                    <div class="flex-shrink-0">
+                        <img src="../images/art-logo.jpg" alt="ART Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobileMenuButton" class="text-secondary-600 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-md p-2">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-surface border-t border-secondary-200">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="dashboard_overview.html" class="bg-primary-50 text-primary block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-tachometer-alt mr-2"></i>
+                    Tableau de Bord
+                </a>
+                <a href="telecommunications_titles_management.html" class="text-secondary-600 hover:text-primary hover:bg-secondary-50 block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-certificate mr-2"></i>
+                    Titres
+                </a>
+                <a href="title_tracking_staff.html" class="text-secondary-600 hover:text-primary hover:bg-secondary-50 block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-clipboard-list mr-2"></i>
+                    Suivi Demandes
+                </a>
+                <a href="user_management_administration.html" class="text-secondary-600 hover:text-primary hover:bg-secondary-50 block px-3 py-2 rounded-md text-base font-medium" id="mobileUserManagementLink">
+                    <i class="fas fa-users mr-2"></i>
+                    Utilisateurs
+                </a>
+                <a href="statistics_and_analytics_dashboard.html" class="text-secondary-600 hover:text-primary hover:bg-secondary-50 block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-chart-bar mr-2"></i>
+                    Statistiques
+                </a>
+                <a href="impact_dashboard.html" class="text-secondary-600 hover:text-primary hover:bg-secondary-50 block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-chart-line mr-2"></i>
+                    Impact Télécoms
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Main Dashboard Content -->
+            <div class="flex-1">
+                <!-- Welcome Section -->
+                <div class="mb-8">
+                    <h1 class="text-3xl font-semibold text-text-primary mb-2">
+                        Tableau de Bord
+                    </h1>
+                    <p class="text-secondary-600">
+                        Bienvenue, <span id="welcomeUserName" class="font-medium text-text-primary">Utilisateur</span>. 
+                        Voici un aperçu de l'activité des titres de télécommunications.
+                    </p>
+                    <div class="text-sm text-secondary-500 mt-1">
+                        Dernière mise à jour: <span id="lastUpdate">29/07/2025 18:04</span>
+                    </div>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Total Active Titles -->
+                    <div class="card hover:shadow-elevated transition-shadow cursor-pointer group" onclick="navigateToTitles('active')">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center group-hover:bg-success-200 transition-colors">
+                                    <i class="fas fa-certificate text-success text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <p class="text-sm font-medium text-secondary-600">Titres Actifs</p>
+                                <p class="text-2xl font-semibold text-text-primary">1 247</p>
+                                <p class="text-xs text-success-600">
+                                    <i class="fas fa-arrow-up mr-1"></i>
+                                    +12 ce mois
+                                </p>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-xs text-secondary-500">
+                            Valeur totale: 2 847 500 000 XAF
+                        </div>
+                    </div>
+
+                    <!-- Expired Titles -->
+                    <div class="card hover:shadow-elevated transition-shadow cursor-pointer group" onclick="navigateToTitles('expired')">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-error-100 rounded-lg flex items-center justify-center group-hover:bg-error-200 transition-colors">
+                                    <i class="fas fa-exclamation-triangle text-error text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <p class="text-sm font-medium text-secondary-600">Titres Expirés</p>
+                                <p class="text-2xl font-semibold text-text-primary">23</p>
+                                <p class="text-xs text-error-600">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>
+                                    Attention requise
+                                </p>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-xs text-secondary-500">
+                            Dernière expiration: 25/07/2025
+                        </div>
+                    </div>
+
+                    <!-- Recent Additions -->
+                    <div class="card hover:shadow-elevated transition-shadow cursor-pointer group" onclick="navigateToTitles('recent')">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-accent-100 rounded-lg flex items-center justify-center group-hover:bg-accent-200 transition-colors">
+                                    <i class="fas fa-plus-circle text-accent text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <p class="text-sm font-medium text-secondary-600">Ajouts Récents</p>
+                                <p class="text-2xl font-semibold text-text-primary">8</p>
+                                <p class="text-xs text-accent-600">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    Cette semaine
+                                </p>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-xs text-secondary-500">
+                            Dernier ajout: 28/07/2025
+                        </div>
+                    </div>
+
+                    <!-- Pending Renewals -->
+                    <div class="card hover:shadow-elevated transition-shadow cursor-pointer group" onclick="navigateToTitles('pending')">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-warning-100 rounded-lg flex items-center justify-center group-hover:bg-warning-200 transition-colors">
+                                    <i class="fas fa-hourglass-half text-warning text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <p class="text-sm font-medium text-secondary-600">Renouvellements</p>
+                                <p class="text-2xl font-semibold text-text-primary">45</p>
+                                <p class="text-xs text-warning-600">
+                                    <i class="fas fa-calendar-alt mr-1"></i>
+                                    30 prochains jours
+                                </p>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-xs text-secondary-500">
+                            Prochain: 05/08/2025
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Impact Metrics Highlight -->
+                <div class="card mb-8" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-semibold text-white">
+                            <i class="fas fa-chart-line mr-2"></i>
+                            Impact sur les Télécommunications
+                        </h2>
+                        <a href="impact_dashboard.html" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg text-sm font-medium transition-all">
+                            Voir Détails <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold mb-2">73%</div>
+                            <div class="text-sm opacity-90">
+                                <i class="fas fa-clock mr-1"></i>
+                                Réduction des délais
+                            </div>
+                            <div class="text-xs opacity-75 mt-1">30 jours → 8 jours</div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="text-3xl font-bold mb-2">92.3%</div>
+                            <div class="text-sm opacity-90">
+                                <i class="fas fa-signal mr-1"></i>
+                                Couverture nationale
+                            </div>
+                            <div class="text-xs opacity-75 mt-1">+12% amélioration</div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="text-3xl font-bold mb-2">99.2%</div>
+                            <div class="text-sm opacity-90">
+                                <i class="fas fa-shield-alt mr-1"></i>
+                                Continuité service
+                            </div>
+                            <div class="text-xs opacity-75 mt-1">85% moins d'interruptions</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-white bg-opacity-10 rounded-lg">
+                        <div class="text-sm opacity-90">
+                            <i class="fas fa-lightbulb mr-2"></i>
+                            L'automatisation a permis d'économiser <strong>2.4M XAF</strong> et d'améliorer l'accès aux télécoms de <strong>18%</strong> en zones rurales.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Panel -->
+                <div class="card mb-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-semibold text-text-primary">Actions Rapides</h2>
+                        <div class="text-sm text-secondary-500">
+                            <i class="fas fa-bolt mr-1"></i>
+                            Accès direct aux fonctions principales
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Add Title -->
+                        <button onclick="navigateToCreateTitle()" class="group bg-primary-50 hover:bg-primary-100 border-2 border-primary-200 hover:border-primary-300 rounded-lg p-6 text-center transition-all duration-200">
+                            <div class="w-12 h-12 bg-primary-100 group-hover:bg-primary-200 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-plus text-primary text-xl"></i>
+                            </div>
+                            <h3 class="font-medium text-primary mb-2">Ajouter Titre</h3>
+                            <p class="text-sm text-secondary-600">Créer un nouveau titre de télécommunication</p>
+                        </button>
+
+                        <!-- Import Excel -->
+                        <button data-action="import-excel" class="group bg-accent-50 hover:bg-accent-100 border-2 border-accent-200 hover:border-accent-300 rounded-lg p-6 text-center transition-all duration-200">
+                            <div class="w-12 h-12 bg-accent-100 group-hover:bg-accent-200 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-file-excel text-accent text-xl"></i>
+                            </div>
+                            <h3 class="font-medium text-accent mb-2">Importer Excel</h3>
+                            <p class="text-sm text-secondary-600">Importer des titres depuis un fichier Excel</p>
+                        </button>
+
+                        <!-- Generate Report -->
+                        <button onclick="generateReport()" class="group bg-success-50 hover:bg-success-100 border-2 border-success-200 hover:border-success-300 rounded-lg p-6 text-center transition-all duration-200">
+                            <div class="w-12 h-12 bg-success-100 group-hover:bg-success-200 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-file-download text-success text-xl"></i>
+                            </div>
+                            <h3 class="font-medium text-success mb-2">Générer Rapport</h3>
+                            <p class="text-sm text-secondary-600">Exporter un rapport détaillé des titres</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Feed -->
+                <div class="card">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-semibold text-text-primary">Activité Récente</h2>
+                        <a href="telecommunications_titles_management.html" class="text-sm text-primary hover:text-primary-700 font-medium">
+                            Voir tout
+                            <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Activity Item 1 -->
+                        <div class="flex items-start space-x-4 p-4 bg-secondary-50 rounded-lg">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-success-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-plus text-success text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm text-text-primary">
+                                    <span class="font-medium">Nouveau titre ajouté</span> - 
+                                    <span class="font-data">TT-2025-0847</span>
+                                </p>
+                                <p class="text-xs text-secondary-600 mt-1">
+                                    Par Marie Dubois • 29/07/2025 à 16:32
+                                </p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <span class="status-badge status-success">Actif</span>
+                            </div>
+                        </div>
+
+                        <!-- Activity Item 2 -->
+                        <div class="flex items-start space-x-4 p-4 bg-secondary-50 rounded-lg">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-warning-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-edit text-warning text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm text-text-primary">
+                                    <span class="font-medium">Titre modifié</span> - 
+                                    <span class="font-data">TT-2024-0523</span>
+                                </p>
+                                <p class="text-xs text-secondary-600 mt-1">
+                                    Par Jean Kamga • 29/07/2025 à 14:15
+                                </p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <span class="status-badge status-warning">En révision</span>
+                            </div>
+                        </div>
+
+                        <!-- Activity Item 3 -->
+                        <div class="flex items-start space-x-4 p-4 bg-secondary-50 rounded-lg">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-error-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-exclamation-triangle text-error text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm text-text-primary">
+                                    <span class="font-medium">Titre expiré</span> - 
+                                    <span class="font-data">TT-2023-0156</span>
+                                </p>
+                                <p class="text-xs text-secondary-600 mt-1">
+                                    Expiration automatique • 28/07/2025 à 23:59
+                                </p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <span class="status-badge status-error">Expiré</span>
+                            </div>
+                        </div>
+
+                        <!-- Activity Item 4 -->
+                        <div class="flex items-start space-x-4 p-4 bg-secondary-50 rounded-lg">
+                            <div class="flex-shrink-0">
+                                <div class="w-8 h-8 bg-accent-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-file-import text-accent text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm text-text-primary">
+                                    <span class="font-medium">Import Excel réussi</span> - 
+                                    <span class="font-medium">15 titres importés</span>
+                                </p>
+                                <p class="text-xs text-secondary-600 mt-1">
+                                    Par Administrateur • 28/07/2025 à 10:45
+                                </p>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <span class="status-badge status-success">Terminé</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Notifications -->
+            <div class="w-full lg:w-80">
+                <!-- Notifications Panel -->
+                <div class="card mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-text-primary">
+                            <i class="fas fa-bell mr-2 text-warning"></i>
+                            Notifications
+                        </h3>
+                        <span class="bg-error-100 text-error-800 text-xs font-medium px-2 py-1 rounded-full">
+                            3 urgentes
+                        </span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <!-- Urgent Notification -->
+                        <div class="p-3 bg-error-50 border border-error-200 rounded-lg">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-exclamation-circle text-error"></i>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <p class="text-sm font-medium text-error-800">Titres expirés</p>
+                                    <p class="text-xs text-error-600 mt-1">
+                                        23 titres ont expiré et nécessitent une action immédiate
+                                    </p>
+                                    <button onclick="navigateToTitles('expired')" class="text-xs text-error-700 hover:text-error-800 font-medium mt-2">
+                                        Voir les titres →
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Warning Notification -->
+                        <div class="p-3 bg-warning-50 border border-warning-200 rounded-lg">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-clock text-warning"></i>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <p class="text-sm font-medium text-warning-800">Renouvellements à venir</p>
+                                    <p class="text-xs text-warning-600 mt-1">
+                                        45 titres expirent dans les 30 prochains jours
+                                    </p>
+                                    <button onclick="navigateToTitles('pending')" class="text-xs text-warning-700 hover:text-warning-800 font-medium mt-2">
+                                        Planifier →
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Info Notification -->
+                        <div class="p-3 bg-accent-50 border border-accent-200 rounded-lg">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-info-circle text-accent"></i>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <p class="text-sm font-medium text-accent-800">Rapport mensuel</p>
+                                    <p class="text-xs text-accent-600 mt-1">
+                                        Le rapport de juillet est prêt à être généré
+                                    </p>
+                                    <button onclick="generateReport()" class="text-xs text-accent-700 hover:text-accent-800 font-medium mt-2">
+                                        Générer →
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="card">
+                    <h3 class="text-lg font-semibold text-text-primary mb-4">
+                        <i class="fas fa-chart-pie mr-2 text-primary"></i>
+                        Statistiques Rapides
+                    </h3>
+
+                    <div class="space-y-4">
+                        <!-- Stat Item 1 -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-success rounded-full mr-3"></div>
+                                <span class="text-sm text-secondary-600">Taux de conformité</span>
+                            </div>
+                            <span class="text-sm font-medium text-text-primary">94.2%</span>
+                        </div>
+
+                        <!-- Stat Item 2 -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-primary rounded-full mr-3"></div>
+                                <span class="text-sm text-secondary-600">Revenus ce mois</span>
+                            </div>
+                            <span class="text-sm font-medium text-text-primary">847M XAF</span>
+                        </div>
+
+                        <!-- Stat Item 3 -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-accent rounded-full mr-3"></div>
+                                <span class="text-sm text-secondary-600">Nouveaux clients</span>
+                            </div>
+                            <span class="text-sm font-medium text-text-primary">+127</span>
+                        </div>
+
+                        <!-- Stat Item 4 -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-warning rounded-full mr-3"></div>
+                                <span class="text-sm text-secondary-600">En attente</span>
+                            </div>
+                            <span class="text-sm font-medium text-text-primary">12</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-secondary-200">
+                        <a href="statistics_and_analytics_dashboard.html" class="text-sm text-primary hover:text-primary-700 font-medium">
+                            Voir toutes les statistiques
+                            <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Import Excel Modal -->
+    <div id="importModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-surface rounded-lg shadow-modal max-w-md w-full mx-4 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-text-primary">
+                    <i class="fas fa-file-excel mr-2 text-accent"></i>
+                    Importer fichier Excel
+                </h3>
+                <button onclick="closeImportModal()" class="text-secondary-500 hover:text-secondary-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="mb-4">
+                <div class="border-2 border-dashed border-secondary-300 rounded-lg p-6 text-center">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-secondary-400 mb-4"></i>
+                    <p class="text-sm text-secondary-600 mb-2">Glissez votre fichier Excel ici ou</p>
+                    <input type="file" id="excelFile" accept=".xlsx,.xls" class="hidden" />
+                    <button onclick="document.getElementById('excelFile').click()" class="btn-primary">
+                        Choisir un fichier
+                    </button>
+                </div>
+                <p class="text-xs text-secondary-500 mt-2">
+                    Formats acceptés: .xlsx, .xls (max 10MB)
+                </p>
+            </div>
+            
+            <div class="flex space-x-3">
+                <button onclick="closeImportModal()" class="btn-secondary flex-1">
+                    Annuler
+                </button>
+                <button onclick="processImport()" class="btn-primary flex-1">
+                    Importer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notificationToast" class="fixed top-4 right-4 bg-surface border border-secondary-200 rounded-lg shadow-elevated p-4 z-50 hidden">
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <i id="toastIcon" class="fas fa-info-circle text-accent"></i>
+            </div>
+            <div class="ml-3 flex-1">
+                <p id="toastMessage" class="text-sm text-text-primary font-medium">Message</p>
+            </div>
+            <button onclick="hideToast()" class="ml-4 text-secondary-500 hover:text-secondary-700">
+                <i class="fas fa-times text-sm"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            updateLastUpdateTime();
+            checkExpiredTitles();
+        });
+
+        // Initialize dashboard with user data
+        function initializeDashboard() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            
+            if (!currentUser.username) {
+                window.location.href = 'login_authentication.html';
+                return;
+            }
+
+            // Update user info in header
+            document.getElementById('userName').textContent = currentUser.name || 'Utilisateur';
+            document.getElementById('welcomeUserName').textContent = currentUser.name || 'Utilisateur';
+            document.getElementById('userRole').textContent = getRoleDisplayName(currentUser.role);
+            document.getElementById('userEmail').textContent = currentUser.username;
+
+            // Hide user management for accountants
+            if (currentUser.role === 'accountant') {
+                const userManagementLinks = document.querySelectorAll('#userManagementLink, #mobileUserManagementLink');
+                userManagementLinks.forEach(link => {
+                    link.style.display = 'none';
+                });
+            }
+        }
+
+        // Get role display name
+        function getRoleDisplayName(role) {
+            const roleNames = {
+                'administrator': 'Administrateur',
+                'accountant': 'Comptable'
+            };
+            return roleNames[role] || role;
+        }
+
+        // Update last update time
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const formatted = now.toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            }) + ' ' + now.toLocaleTimeString('fr-FR', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('lastUpdate').textContent = formatted;
+        }
+
+        // Check for expired titles and show notifications
+        function checkExpiredTitles() {
+            // Simulate checking for expired titles
+            setTimeout(() => {
+                showNotification('Attention: 23 titres ont expiré et nécessitent une action immédiate', 'warning');
+            }, 2000);
+        }
+
+        // Navigation functions
+        function navigateToTitles(filter = '') {
+            let url = 'telecommunications_titles_management.html';
+            if (filter) {
+                url += `?filter=${filter}`;
+            }
+            window.location.href = url;
+        }
+
+        function navigateToCreateTitle() {
+            window.location.href = 'title_creation_and_edit_form.html';
+        }
+
+        // Modal functions
+        function showImportModal() {
+            document.getElementById('importModal').classList.remove('hidden');
+            document.getElementById('importModal').classList.add('flex');
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').classList.add('hidden');
+            document.getElementById('importModal').classList.remove('flex');
+            document.getElementById('excelFile').value = '';
+        }
+
+        // Process Excel import
+        function processImport() {
+            const fileInput = document.getElementById('excelFile');
+            if (!fileInput.files.length) {
+                showNotification('Veuillez sélectionner un fichier Excel', 'error');
+                return;
+            }
+
+            // Simulate import process
+            showNotification('Import en cours...', 'info');
+            closeImportModal();
+            
+            setTimeout(() => {
+                showNotification('Import réussi: 15 titres ont été importés', 'success');
+                // Update dashboard stats here
+            }, 3000);
+        }
+
+        // Generate report
+        function generateReport() {
+            showNotification('Génération du rapport en cours...', 'info');
+            
+            // Simulate report generation
+            setTimeout(() => {
+                showNotification('Rapport généré avec succès', 'success');
+                // Trigger download here
+            }, 2000);
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const toast = document.getElementById('notificationToast');
+            const icon = document.getElementById('toastIcon');
+            const messageEl = document.getElementById('toastMessage');
+
+            // Set icon and color based on type
+            const iconClasses = {
+                'success': 'fas fa-check-circle text-success',
+                'error': 'fas fa-exclamation-circle text-error',
+                'warning': 'fas fa-exclamation-triangle text-warning',
+                'info': 'fas fa-info-circle text-accent'
+            };
+
+            icon.className = iconClasses[type] || iconClasses.info;
+            messageEl.textContent = message;
+
+            toast.classList.remove('hidden');
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                hideToast();
+            }, 5000);
+        }
+
+        function hideToast() {
+            document.getElementById('notificationToast').classList.add('hidden');
+        }
+
+        // User menu dropdown
+        document.getElementById('userMenuButton').addEventListener('click', function() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenuButton');
+            const dropdown = document.getElementById('userDropdown');
+            
+            if (!userMenu.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobileMenuButton').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const icon = this.querySelector('i');
+            
+            mobileMenu.classList.toggle('hidden');
+            
+            if (mobileMenu.classList.contains('hidden')) {
+                icon.className = 'fas fa-bars text-xl';
+            } else {
+                icon.className = 'fas fa-times text-xl';
+            }
+        });
+
+        // Logout function
+        function logout() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'login_authentication.html';
+        }
+
+        // Close modal on outside click
+        document.getElementById('importModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeImportModal();
+            }
+        });
+
+        // File input change handler
+        document.getElementById('excelFile').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const fileName = e.target.files[0].name;
+                showNotification(`Fichier sélectionné: ${fileName}`, 'info');
+            }
+        });
+
+        // Auto-refresh dashboard data every 5 minutes
+        setInterval(() => {
+            updateLastUpdateTime();
+            // Here you would typically fetch fresh data from the server
+        }, 300000); // 5 minutes
+    </script>
+    <!-- Intégration API -->
+    <script src="../js/api-integration.js"></script>
+    <script src="../js/excel-integration-django.js"></script>
+    
+    <script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>

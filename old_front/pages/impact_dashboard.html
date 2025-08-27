@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Impact Dashboard - ART Telecom Analytics</title>
+    <link rel="stylesheet" href="../css/main.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+    <style>
+        .impact-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .improvement-card {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        
+        .kpi-card {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
+            color: white;
+        }
+        
+        .coverage-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .metric-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+        
+        .small-chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        .region-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .region-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        
+        .progress-bar {
+            background-color: rgba(255,255,255,0.3);
+            border-radius: 1rem;
+            height: 0.5rem;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 1rem;
+            background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+            transition: width 0.5s ease;
+        }
+        
+        .impact-highlight {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border-left: 4px solid #ff6b6b;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+        }
+        
+        .performance-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            border-radius: 0.25rem;
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .indicator-positive {
+            color: #10b981;
+        }
+        
+        .indicator-negative {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen">
+    <!-- Header with Navigation -->
+    <header class="bg-surface shadow-institutional border-b border-secondary-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Polytechnique Logo (Left) -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="../images/polytechnique-logo.jpg" alt="Polytechnique Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+
+                <!-- Page Title -->
+                <div class="flex-1 text-center">
+                    <h1 class="text-xl font-semibold text-text-primary">
+                        <i class="fas fa-chart-line mr-2 text-primary"></i>
+                        Impact Dashboard - Télécommunications Cameroun
+                    </h1>
+                </div>
+
+                <!-- ART Logo (Right) -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <img src="../images/art-logo.jpg" alt="ART Cameroun" class="h-16 w-auto" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Key Impact Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="card improvement-card p-6 text-center">
+                <div class="metric-value" id="processing-time-reduction">73%</div>
+                <div class="metric-label">
+                    <i class="fas fa-clock mr-2"></i>
+                    Réduction Délais de Traitement
+                </div>
+                <div class="text-sm mt-2 opacity-90">30 jours → 8 jours</div>
+            </div>
+            
+            <div class="card coverage-card p-6 text-center">
+                <div class="metric-value" id="network-coverage">92.3%</div>
+                <div class="metric-label">
+                    <i class="fas fa-signal mr-2"></i>
+                    Couverture Réseau Nationale
+                </div>
+                <div class="text-sm mt-2 opacity-90">+12% vs année précédente</div>
+            </div>
+            
+            <div class="card kpi-card p-6 text-center">
+                <div class="metric-value" id="service-continuity">99.2%</div>
+                <div class="metric-label">
+                    <i class="fas fa-shield-alt mr-2"></i>
+                    Continuité de Service
+                </div>
+                <div class="text-sm mt-2 opacity-90">Réduction interruptions 85%</div>
+            </div>
+            
+            <div class="card impact-card p-6 text-center">
+                <div class="metric-value" id="license-renewal">96.5%</div>
+                <div class="metric-label">
+                    <i class="fas fa-sync-alt mr-2"></i>
+                    Taux de Renouvellement
+                </div>
+                <div class="text-sm mt-2 opacity-90">+21.5% amélioration</div>
+            </div>
+        </div>
+
+        <!-- Impact Highlights -->
+        <div class="impact-highlight mb-8">
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">
+                <i class="fas fa-lightbulb mr-2 text-yellow-500"></i>
+                Impact Clé de l'Automatisation
+            </h3>
+            <p class="text-gray-700">
+                Grâce à l'automatisation du processus de gestion des titres, l'ART a réduit les délais de traitement de <strong>73%</strong>, 
+                éliminé <strong>95% des erreurs manuelles</strong>, et amélioré la couverture réseau de <strong>12%</strong> en évitant 
+                les interruptions dues aux titres expirés.
+            </p>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Evolution des Titres -->
+            <div class="card">
+                <div class="px-6 py-4 border-b border-secondary-200">
+                    <h3 class="text-lg font-semibold text-text-primary">
+                        <i class="fas fa-chart-line mr-2 text-primary"></i>
+                        Évolution des Titres Actifs/Expirés
+                    </h3>
+                    <p class="text-sm text-secondary-600 mt-1">Impact sur la continuité du service réseau</p>
+                </div>
+                <div class="p-6">
+                    <div class="chart-container">
+                        <canvas id="titlesEvolutionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QoS Impact -->
+            <div class="card">
+                <div class="px-6 py-4 border-b border-secondary-200">
+                    <h3 class="text-lg font-semibold text-text-primary">
+                        <i class="fas fa-shield-alt mr-2 text-success"></i>
+                        Impact sur la Qualité de Service (QoS)
+                    </h3>
+                    <p class="text-sm text-secondary-600 mt-1">Réduction des erreurs et interruptions</p>
+                </div>
+                <div class="p-6">
+                    <div class="small-chart-container">
+                        <canvas id="qosImpactChart"></canvas>
+                    </div>
+                    <div class="mt-4 space-y-2">
+                        <div class="performance-indicator">
+                            <span>Interruptions évitées</span>
+                            <span class="indicator-positive">
+                                <i class="fas fa-arrow-down mr-1"></i>85%
+                            </span>
+                        </div>
+                        <div class="performance-indicator">
+                            <span>Erreurs de traitement</span>
+                            <span class="indicator-positive">
+                                <i class="fas fa-arrow-down mr-1"></i>95%
+                            </span>
+                        </div>
+                        <div class="performance-indicator">
+                            <span>Satisfaction client</span>
+                            <span class="indicator-positive">
+                                <i class="fas fa-arrow-up mr-1"></i>42%
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Regional Coverage Analysis -->
+        <div class="card mb-8">
+            <div class="px-6 py-4 border-b border-secondary-200">
+                <h3 class="text-lg font-semibold text-text-primary">
+                    <i class="fas fa-map-marked-alt mr-2 text-accent"></i>
+                    Couverture Réseau par Région
+                </h3>
+                <p class="text-sm text-secondary-600 mt-1">Amélioration de la couverture grâce à une meilleure gestion des licences</p>
+            </div>
+            <div class="p-6">
+                <div class="chart-container">
+                    <canvas id="coverageChart"></canvas>
+                </div>
+                
+                <!-- Regional Details -->
+                <div class="region-grid mt-6">
+                    <div class="region-card">
+                        <h4 class="font-semibold">Centre</h4>
+                        <div class="metric-value text-lg">98.5%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 98.5%"></div>
+                        </div>
+                        <div class="text-sm opacity-90">Yaoundé + Douala</div>
+                    </div>
+                    
+                    <div class="region-card">
+                        <h4 class="font-semibold">Littoral</h4>
+                        <div class="metric-value text-lg">95.2%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 95.2%"></div>
+                        </div>
+                        <div class="text-sm opacity-90">Port économique</div>
+                    </div>
+                    
+                    <div class="region-card">
+                        <h4 class="font-semibold">Ouest</h4>
+                        <div class="metric-value text-lg">88.7%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 88.7%"></div>
+                        </div>
+                        <div class="text-sm opacity-90">Bafoussam</div>
+                    </div>
+                    
+                    <div class="region-card">
+                        <h4 class="font-semibold">Nord</h4>
+                        <div class="metric-value text-lg">72.3%</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 72.3%"></div>
+                        </div>
+                        <div class="text-sm opacity-90">En expansion</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Processing Time Analysis -->
+            <div class="card">
+                <div class="px-6 py-4 border-b border-secondary-200">
+                    <h3 class="text-lg font-semibold text-text-primary">
+                        <i class="fas fa-stopwatch mr-2 text-warning"></i>
+                        Analyse des Délais de Traitement
+                    </h3>
+                </div>
+                <div class="p-6">
+                    <div class="small-chart-container">
+                        <canvas id="processingTimeChart"></canvas>
+                    </div>
+                    <div class="mt-4">
+                        <div class="bg-success-50 border border-success-200 rounded p-3">
+                            <div class="text-success-800 font-semibold">Avant Automatisation</div>
+                            <div class="text-success-600">Délai moyen: 30 jours</div>
+                        </div>
+                        <div class="bg-primary-50 border border-primary-200 rounded p-3 mt-2">
+                            <div class="text-primary-800 font-semibold">Après Automatisation</div>
+                            <div class="text-primary-600">Délai moyen: 8 jours</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Frequency Allocation -->
+            <div class="card">
+                <div class="px-6 py-4 border-b border-secondary-200">
+                    <h3 class="text-lg font-semibold text-text-primary">
+                        <i class="fas fa-broadcast-tower mr-2 text-accent"></i>
+                        Gestion des Fréquences
+                    </h3>
+                </div>
+                <div class="p-6">
+                    <div class="small-chart-container">
+                        <canvas id="frequencyChart"></canvas>
+                    </div>
+                    <div class="mt-4 space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-secondary-50 rounded">
+                            <span class="text-secondary-700">Conflits évités</span>
+                            <span class="text-success font-semibold">98.5%</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-secondary-50 rounded">
+                            <span class="text-secondary-700">Utilisation optimale</span>
+                            <span class="text-success font-semibold">92.3%</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-secondary-50 rounded">
+                            <span class="text-secondary-700">Nouvelles attributions</span>
+                            <span class="text-primary font-semibold">+156 bandes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Economic Impact -->
+        <div class="card">
+            <div class="px-6 py-4 border-b border-secondary-200">
+                <h3 class="text-lg font-semibold text-text-primary">
+                    <i class="fas fa-coins mr-2 text-warning"></i>
+                    Impact Économique et Social
+                </h3>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-success-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-hand-holding-usd text-success text-xl"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-text-primary">2.4M</div>
+                        <div class="text-sm text-secondary-600">Économies générées</div>
+                        <div class="text-xs text-success">Réduction coûts opérationnels</div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-users text-primary text-xl"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-text-primary">+18%</div>
+                        <div class="text-sm text-secondary-600">Accès aux télécoms</div>
+                        <div class="text-xs text-primary">Zones rurales connectées</div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-rocket text-accent text-xl"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-text-primary">156</div>
+                        <div class="text-sm text-secondary-600">Nouvelles licences</div>
+                        <div class="text-xs text-accent">Innovation facilitée</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Actions -->
+        <div class="flex justify-center space-x-4 mt-8">
+            <button onclick="refreshDashboard()" class="btn-primary">
+                <i class="fas fa-sync-alt mr-2"></i>
+                Actualiser les Données
+            </button>
+            <button onclick="exportReport()" class="btn-secondary">
+                <i class="fas fa-download mr-2"></i>
+                Exporter Rapport
+            </button>
+            <a href="dashboard_overview.html" class="btn-secondary">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Retour Dashboard
+            </a>
+        </div>
+    </main>
+
+    <script>
+        // Configuration Chart.js
+        Chart.defaults.font.family = 'Inter, sans-serif';
+        Chart.defaults.color = '#64748B';
+
+        // Données simulées basées sur des scénarios réalistes
+        const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+        
+        const titlesData = {
+            active: [245, 248, 251, 267, 289, 295, 312, 318, 325, 331, 338, 345],
+            expired: [23, 19, 15, 12, 8, 6, 4, 3, 2, 2, 1, 1],
+            processing: [12, 8, 6, 4, 3, 2, 2, 1, 1, 1, 1, 0]
+        };
+
+        const coverageData = {
+            regions: ['Centre', 'Littoral', 'Ouest', 'Nord', 'Sud', 'Est', 'Nord-Ouest', 'Sud-Ouest', 'Adamaoua', 'Extrême-Nord'],
+            before: [85, 82, 78, 65, 70, 68, 72, 75, 69, 62],
+            after: [98.5, 95.2, 88.7, 72.3, 79.8, 76.5, 81.2, 84.6, 77.9, 69.8]
+        };
+
+        // 1. Graphique d'évolution des titres
+        const titlesCtx = document.getElementById('titlesEvolutionChart').getContext('2d');
+        new Chart(titlesCtx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Titres Actifs',
+                        data: titlesData.active,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Titres Expirés',
+                        data: titlesData.expired,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'En Traitement',
+                        data: titlesData.processing,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Évolution mensuelle - Impact sur la continuité réseau'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Nombre de titres'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Graphique QoS Impact
+        const qosCtx = document.getElementById('qosImpactChart').getContext('2d');
+        new Chart(qosCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Service Optimal', 'Interruptions Évitées', 'Maintenance Préventive', 'Erreurs Résiduelles'],
+                datasets: [{
+                    data: [85, 10, 4, 1],
+                    backgroundColor: [
+                        '#10b981',
+                        '#3b82f6',
+                        '#f59e0b',
+                        '#ef4444'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Répartition de la Qualité de Service (%)'
+                    }
+                }
+            }
+        });
+
+        // 3. Graphique de couverture par région
+        const coverageCtx = document.getElementById('coverageChart').getContext('2d');
+        new Chart(coverageCtx, {
+            type: 'bar',
+            data: {
+                labels: coverageData.regions,
+                datasets: [
+                    {
+                        label: 'Avant Automatisation',
+                        data: coverageData.before,
+                        backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                        borderColor: '#ef4444',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Après Automatisation',
+                        data: coverageData.after,
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderColor: '#10b981',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Amélioration de la couverture réseau par région (%)'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Taux de couverture (%)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 4. Graphique des délais de traitement
+        const processingCtx = document.getElementById('processingTimeChart').getContext('2d');
+        new Chart(processingCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Nouvelle Demande', 'Révision', 'Validation', 'Approbation', 'Émission'],
+                datasets: [
+                    {
+                        label: 'Avant (jours)',
+                        data: [5, 8, 12, 3, 2],
+                        backgroundColor: 'rgba(239, 68, 68, 0.7)'
+                    },
+                    {
+                        label: 'Après (jours)',
+                        data: [1, 2, 3, 1, 1],
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Délai (jours)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 5. Graphique de gestion des fréquences
+        const frequencyCtx = document.getElementById('frequencyChart').getContext('2d');
+        new Chart(frequencyCtx, {
+            type: 'pie',
+            data: {
+                labels: ['2G/3G', '4G', '5G', 'Réservées', 'Disponibles'],
+                datasets: [{
+                    data: [35, 40, 15, 5, 5],
+                    backgroundColor: [
+                        '#ef4444',
+                        '#3b82f6',
+                        '#10b981',
+                        '#f59e0b',
+                        '#64748b'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Répartition des Fréquences Allouées (%)'
+                    }
+                }
+            }
+        });
+
+        // Fonctions utilitaires
+        function refreshDashboard() {
+            // Animation de rafraîchissement
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.style.opacity = '0.5';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                }, 500);
+            });
+            
+            // Simulation de nouvelles données
+            setTimeout(() => {
+                document.getElementById('processing-time-reduction').textContent = Math.floor(Math.random() * 5 + 70) + '%';
+                document.getElementById('network-coverage').textContent = (Math.random() * 3 + 90).toFixed(1) + '%';
+                document.getElementById('service-continuity').textContent = (Math.random() * 2 + 98).toFixed(1) + '%';
+                document.getElementById('license-renewal').textContent = (Math.random() * 4 + 94).toFixed(1) + '%';
+            }, 500);
+            
+            alert('Dashboard actualisé avec les dernières données !');
+        }
+
+        function exportReport() {
+            // Simulation d'export
+            const reportData = {
+                date: new Date().toLocaleDateString('fr-FR'),
+                metrics: {
+                    processingTimeReduction: document.getElementById('processing-time-reduction').textContent,
+                    networkCoverage: document.getElementById('network-coverage').textContent,
+                    serviceContinuity: document.getElementById('service-continuity').textContent,
+                    licenseRenewal: document.getElementById('license-renewal').textContent
+                }
+            };
+            
+            console.log('Rapport d\'impact généré:', reportData);
+            alert('Rapport d\'impact exporté avec succès !\n\nContient :\n- Métriques de performance\n- Graphiques d\'évolution\n- Analyse par région\n- Impact économique');
+        }
+
+        // Animation d'entrée
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.5s ease';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
